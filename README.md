@@ -11,7 +11,7 @@
 
 ### 🖼️ Screenshot / Demo
 
-**W.I.P.**
+W.I.P.
 
 ---
 
@@ -30,6 +30,14 @@ The project leverages a modern, API-first architecture to deliver a powerful exp
 * **Backend:** `Serverless Function` (Designed as a secure API proxy)
 * **Core AI:** `Advanced AI API`
 * **Version Control:** `Git` & `GitHub`
+
+## 🏛️ System Architecture
+
+Our project uses a modern, API-first architecture to ensure security and scalability. The data flow is illustrated below:
+
+![System Architecture Flowchart for Project Zion](assets/flowchart.png)
+
+---
 
 ## 🚀 Getting Started
 
