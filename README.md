@@ -33,7 +33,7 @@ The project leverages a modern, API-first architecture to deliver a powerful exp
 
 ## 🚀 Getting Started
 
-To run the front-end prototype locally:
+To run the prototype locally:
 
 1.  Clone this repository to your local machine.
 2.  Open the `mainpage.html` file in your web browser.
