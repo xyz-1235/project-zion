@@ -20,6 +20,9 @@ class ProjectZionAI {
     constructor() {
         this.conversationHistory = [];
         this.isConnected = false;
+        this.lastVersion = null;
+        this.lastModel = null;
+        this.lastEndpoint = null;
         
         this.systemPrompt = `You are a specialized AI assistant for Project Zion, designed to help victims of cybercrime, digital harassment, and privacy violations. You provide empathetic, non-judgmental support while offering practical, actionable guidance on cybersecurity, digital safety, and privacy protection.
 
@@ -169,6 +172,14 @@ Remember: You are a safe space for people who have been digitally victimized.`;
             throw new Error('Invalid response format from AI service');
         }
 
+        // Store version info for display
+        if (data.version) {
+            this.lastVersion = data.version;
+            this.lastModel = data.model;
+            this.lastEndpoint = data.endpoint;
+            this.updateVersionDisplay();
+        }
+
         const assistantMessage = data.message;
 
         // Add assistant response to conversation history
@@ -305,6 +316,32 @@ Remember: You are a safe space for people who have been digitally victimized.`;
                 }
             }, 300);
         }, 3000);
+    }
+
+    updateVersionDisplay() {
+        const statusElement = document.getElementById('ai-status-text');
+        const versionElement = document.getElementById('version-info');
+        
+        if (statusElement && this.lastVersion) {
+            const versionInfo = `AI Ready (v${this.lastVersion} - ${this.lastModel})`;
+            statusElement.textContent = versionInfo;
+        }
+        
+        if (versionElement && this.lastVersion) {
+            versionElement.innerHTML = `
+                Function Version: <strong>${this.lastVersion}</strong> | 
+                Model: <strong>${this.lastModel}</strong> | 
+                Status: <span style="color: #10b981;">Active</span>
+            `;
+        }
+        
+        // Log detailed version info to console
+        if (this.lastVersion) {
+            console.log(`🤖 AI Service Info:
+Version: ${this.lastVersion}
+Model: ${this.lastModel}
+Endpoint: ${this.lastEndpoint}`);
+        }
     }
 
     escapeHtml(text) {

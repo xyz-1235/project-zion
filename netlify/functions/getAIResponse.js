@@ -1,5 +1,8 @@
 // Project Zion - Netlify Serverless Function for AI Chat
 // This runs securely on Netlify's servers, protecting your API key
+// Version: 2.1 - Multi-endpoint Google AI integration with robust fallbacks
+
+const FUNCTION_VERSION = "2.1";
 
 exports.handler = async function(event, context) {
     // Only allow POST requests
@@ -105,7 +108,9 @@ exports.handler = async function(event, context) {
                             body: JSON.stringify({ 
                                 message: aiMessage,
                                 success: true,
-                                model: modelName
+                                model: modelName,
+                                version: FUNCTION_VERSION,
+                                endpoint: API_URL
                             })
                         };
                     }
@@ -137,7 +142,8 @@ exports.handler = async function(event, context) {
             },
             body: JSON.stringify({ 
                 error: error.message || "Failed to get response from AI service",
-                success: false 
+                success: false,
+                version: FUNCTION_VERSION
             })
         };
     }

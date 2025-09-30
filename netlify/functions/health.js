@@ -1,5 +1,8 @@
 // Project Zion - Health Check Function for Netlify
 // Simple function to check if the API is working
+// Version: 1.1 - Added version tracking
+
+const HEALTH_VERSION = "1.1";
 
 exports.handler = async function(event, context) {
     // Handle CORS preflight requests
