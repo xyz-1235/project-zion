@@ -1,0 +1,43 @@
+# Project Zion - Netlify Deployment Configuration
+
+# Build settings
+[build]
+  publish = "."
+  functions = "netlify/functions"
+
+# Environment variables (you'll set these in Netlify dashboard)
+# GOOGLE_AI_API_KEY=your_actual_api_key_here
+
+# Headers for security and CORS
+[[headers]]
+  for = "/*"
+  [headers.values]
+    X-Frame-Options = "DENY"
+    X-XSS-Protection = "1; mode=block"
+    X-Content-Type-Options = "nosniff"
+    Referrer-Policy = "strict-origin-when-cross-origin"
+
+[[headers]]
+  for = "/.netlify/functions/*"
+  [headers.values]
+    Access-Control-Allow-Origin = "*"
+    Access-Control-Allow-Headers = "Content-Type"
+    Access-Control-Allow-Methods = "POST, OPTIONS"
+
+# Redirects
+[[redirects]]
+  from = "/api/*"
+  to = "/.netlify/functions/:splat"
+  status = 200
+
+# Default page
+[[redirects]]
+  from = "/"
+  to = "/mainpage.html"
+  status = 200
+
+# 404 handling
+[[redirects]]
+  from = "/*"
+  to = "/mainpage.html"
+  status = 404
