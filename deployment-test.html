@@ -1,0 +1,218 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Project Zion - Deployment Test</title>
+    <style>
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            max-width: 800px;
+            margin: 50px auto;
+            padding: 20px;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            color: white;
+        }
+        .container {
+            background: rgba(255,255,255,0.1);
+            padding: 30px;
+            border-radius: 15px;
+            backdrop-filter: blur(10px);
+        }
+        .status-card {
+            background: rgba(255,255,255,0.1);
+            padding: 20px;
+            margin: 15px 0;
+            border-radius: 10px;
+            border-left: 4px solid #10b981;
+        }
+        .status-card.error {
+            border-left-color: #ef4444;
+        }
+        .status-card.warning {
+            border-left-color: #f59e0b;
+        }
+        button {
+            background: #10b981;
+            color: white;
+            border: none;
+            padding: 12px 24px;
+            border-radius: 6px;
+            cursor: pointer;
+            margin: 10px 5px;
+            font-size: 14px;
+        }
+        button:hover {
+            background: #059669;
+        }
+        .test-input {
+            width: 100%;
+            padding: 10px;
+            margin: 10px 0;
+            border: 1px solid #ddd;
+            border-radius: 5px;
+            font-size: 14px;
+        }
+        pre {
+            background: rgba(0,0,0,0.3);
+            padding: 15px;
+            border-radius: 5px;
+            overflow-x: auto;
+            font-size: 12px;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>🚀 Project Zion - Deployment Verification</h1>
+        <p>This page helps verify your Netlify deployment is working correctly.</p>
+        
+        <div id="environment-check" class="status-card">
+            <h3>📍 Environment Detection</h3>
+            <p id="env-status">Checking...</p>
+        </div>
+        
+        <div id="function-check" class="status-card">
+            <h3>⚡ Netlify Function Test</h3>
+            <p id="function-status">Not tested</p>
+            <button onclick="testNetlifyFunction()">Test Function</button>
+        </div>
+        
+        <div id="api-check" class="status-card">
+            <h3>🤖 AI API Test</h3>
+            <p id="api-status">Not tested</p>
+            <input type="text" id="test-message" class="test-input" placeholder="Enter test message..." value="Hello, are you working?">
+            <br>
+            <button onclick="testAI()">Test AI Response</button>
+        </div>
+        
+        <div id="results" class="status-card">
+            <h3>📊 Test Results</h3>
+            <pre id="results-content">No tests run yet</pre>
+        </div>
+        
+        <div class="status-card">
+            <h3>🔗 Quick Links</h3>
+            <button onclick="window.location.href='index.html'">Go to Main Site</button>
+            <button onclick="window.location.href='local-test.html'">Local Test Page</button>
+        </div>
+    </div>
+
+    <script>
+        // Environment detection
+        function detectEnvironment() {
+            const hostname = window.location.hostname;
+            const protocol = window.location.protocol;
+            const isLocal = hostname === 'localhost' || hostname === '127.0.0.1' || protocol === 'file:';
+            const isNetlify = hostname.includes('netlify.app') || hostname.includes('netlify.com');
+            
+            let status = '';
+            let cardClass = 'status-card';
+            
+            if (isLocal) {
+                status = `🏠 Local Development Environment<br>Hostname: ${hostname}<br>Protocol: ${protocol}`;
+                cardClass += ' warning';
+            } else if (isNetlify) {
+                status = `☁️ Netlify Production Environment<br>Domain: ${hostname}<br>✅ Ready for Function Testing`;
+                cardClass += '';
+            } else {
+                status = `🌐 Custom Domain Environment<br>Domain: ${hostname}<br>⚠️ Ensure Netlify Functions are enabled`;
+                cardClass += ' warning';
+            }
+            
+            document.getElementById('environment-check').className = cardClass;
+            document.getElementById('env-status').innerHTML = status;
+        }
+
+        // Test Netlify Function
+        async function testNetlifyFunction() {
+            const statusEl = document.getElementById('function-status');
+            const cardEl = document.getElementById('function-check');
+            
+            statusEl.textContent = '🔄 Testing function...';
+            cardEl.className = 'status-card';
+            
+            try {
+                const response = await fetch('/.netlify/functions/getAIResponse', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ message: 'test' })
+                });
+                
+                if (response.ok) {
+                    const data = await response.json();
+                    statusEl.innerHTML = `✅ Function Working!<br>Status: ${response.status}<br>Response received: ${data.reply ? 'Yes' : 'No'}`;
+                    cardEl.className = 'status-card';
+                    updateResults('Function Test', 'SUCCESS', { status: response.status, hasReply: !!data.reply });
+                } else {
+                    const errorText = await response.text();
+                    statusEl.innerHTML = `❌ Function Error<br>Status: ${response.status}<br>Error: ${errorText}`;
+                    cardEl.className = 'status-card error';
+                    updateResults('Function Test', 'ERROR', { status: response.status, error: errorText });
+                }
+            } catch (error) {
+                statusEl.innerHTML = `❌ Function Unavailable<br>Error: ${error.message}`;
+                cardEl.className = 'status-card error';
+                updateResults('Function Test', 'FAILED', { error: error.message });
+            }
+        }
+
+        // Test AI Response
+        async function testAI() {
+            const message = document.getElementById('test-message').value;
+            const statusEl = document.getElementById('api-status');
+            const cardEl = document.getElementById('api-check');
+            
+            if (!message.trim()) {
+                alert('Please enter a test message');
+                return;
+            }
+            
+            statusEl.textContent = '🤖 Getting AI response...';
+            cardEl.className = 'status-card';
+            
+            try {
+                const response = await fetch('/.netlify/functions/getAIResponse', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ message: message })
+                });
+                
+                if (response.ok) {
+                    const data = await response.json();
+                    statusEl.innerHTML = `✅ AI Response Received!<br>Message: "${message}"<br>Response: "${data.reply.substring(0, 100)}${data.reply.length > 100 ? '...' : ''}"`;
+                    cardEl.className = 'status-card';
+                    updateResults('AI Test', 'SUCCESS', { message, reply: data.reply });
+                } else {
+                    const errorData = await response.json().catch(() => ({}));
+                    statusEl.innerHTML = `❌ AI Error<br>Status: ${response.status}<br>Error: ${errorData.error || 'Unknown error'}`;
+                    cardEl.className = 'status-card error';
+                    updateResults('AI Test', 'ERROR', { status: response.status, error: errorData.error });
+                }
+            } catch (error) {
+                statusEl.innerHTML = `❌ AI Unavailable<br>Error: ${error.message}`;
+                cardEl.className = 'status-card error';
+                updateResults('AI Test', 'FAILED', { error: error.message });
+            }
+        }
+
+        // Update results
+        function updateResults(testName, status, data) {
+            const resultsEl = document.getElementById('results-content');
+            const timestamp = new Date().toISOString();
+            const result = {
+                test: testName,
+                status: status,
+                timestamp: timestamp,
+                data: data
+            };
+            
+            resultsEl.textContent = JSON.stringify(result, null, 2);
+        }
+
+        // Initialize on page load
+        detectEnvironment();
+    </script>
+</body>
+</html>

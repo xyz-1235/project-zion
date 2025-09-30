@@ -1,0 +1,14 @@
+{
+  "name": "project-zion",
+  "version": "1.0.0",
+  "description": "Project Zion AI-powered cybersecurity assistance platform",
+  "main": "index.js",
+  "scripts": {
+    "build": "echo 'No build step required'",
+    "start": "echo 'Static site - no start command needed'"
+  },
+  "dependencies": {},
+  "devDependencies": {},
+  "author": "Project Zion Team",
+  "license": "MIT"
+}

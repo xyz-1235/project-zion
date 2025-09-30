@@ -117,15 +117,25 @@ class ZionChatbot {
     }
     
     async callAI(message) {
-        // Check if we're running locally (fallback to direct API call)
+        // Check if we're running locally or on Netlify
         const isLocal = window.location.hostname === 'localhost' || 
                        window.location.hostname === '127.0.0.1' || 
                        window.location.protocol === 'file:';
         
-        if (isLocal) {
-            return await this.callGeminiDirectly(message);
+        const isNetlify = window.location.hostname.includes('netlify.app') || 
+                         window.location.hostname.includes('netlify.com');
+        
+        // For Netlify deployment, always try the function first
+        if (isNetlify || !isLocal) {
+            try {
+                return await this.callNetlifyFunction(message);
+            } catch (error) {
+                console.log('Netlify function failed, falling back to direct API call...', error.message);
+                return await this.callGeminiDirectly(message);
+            }
         } else {
-            return await this.callNetlifyFunction(message);
+            // For local development, use direct API call
+            return await this.callGeminiDirectly(message);
         }
     }
     
