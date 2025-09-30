@@ -21,7 +21,7 @@ Ultimately, Project Zion is a fortress of support, designed to help users find t
 
 ### 🖼️ Screenshot / Demo
 
-`![Project Zion Demo](link_to_your_screenshot.png)`
+![Main page (for current version)](assets/mainpage.png)
 
 ---
 
