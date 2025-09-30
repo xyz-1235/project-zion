@@ -1,6 +1,29 @@
 // Project Zion - AI Powered Chat Interface
 // Real AI API integration for cybersecurity support
 
+/* * QUICK SETUP GUIDE:
+ * * 1. Get your Google AI Studio API key from https://aistudio.google.com/app/apikey
+ * 2. Replace 'your-google-ai-api-key-here' below with your actual API key
+ * 3. Save this file and refresh the page
+ * 4. That's it! The AI chat should work immediately.
+ * * Note: This implementation calls Google AI Studio (Gemini) directly from the browser.
+ * For production use, consider using a backend server to protect your API key.
+ */
+
+// =================================
+// CONFIGURATION - ADD YOUR API KEY HERE
+// =================================
+const CONFIG = {
+    // Replace 'your-google-ai-api-key-here' with your actual Google AI Studio API key
+    GOOGLE_AI_API_KEY: 'AIzaSyAM1vn_fYcAeFSDdyV1SXyZShzfnR_RlS8',
+    
+    // Google AI Studio API settings (you can modify these if needed)
+    API_URL: 'https://generativelanguage.googleapis.com/v1beta/models/gemini-pro:generateContent',
+    MODEL: 'gemini-pro',
+    MAX_TOKENS: 1000,
+    TEMPERATURE: 0.7
+};
+
 class ProjectZionAI {
     constructor() {
         this.conversationHistory = [];
@@ -30,30 +53,50 @@ Remember: You are a safe space for people who have been digitally victimized.`;
 
     init() {
         this.setupEventListeners();
-        this.checkServerConnection();
+        this.checkAPIConfiguration();
     }
 
-    async checkServerConnection() {
+    async checkAPIConfiguration() {
         try {
-            this.setAIStatus('connecting', 'Connecting to AI service...');
+            this.setAIStatus('connecting', 'Checking AI configuration...');
             
-            const response = await fetch('/api/health', {
-                method: 'GET',
+            // Check if API key is configured
+            if (!CONFIG.GOOGLE_AI_API_KEY || CONFIG.GOOGLE_AI_API_KEY === 'your-google-ai-api-key-here') {
+                throw new Error('API key not configured');
+            }
+            
+            // Test API connection with a simple request
+            const testResponse = await fetch(`${CONFIG.API_URL}?key=${CONFIG.GOOGLE_AI_API_KEY}`, {
+                method: 'POST',
                 headers: {
                     'Content-Type': 'application/json'
-                }
+                },
+                body: JSON.stringify({
+                    contents: [{
+                        parts: [{ text: 'Test connection' }]
+                    }],
+                    generationConfig: {
+                        maxOutputTokens: 1,
+                        temperature: CONFIG.TEMPERATURE
+                    }
+                })
             });
             
-            if (response.ok) {
+            if (testResponse.ok || testResponse.status === 400) {
+                // 400 might mean API key is valid but request format issues
                 this.isConnected = true;
                 this.setAIStatus('connected', 'AI Ready');
             } else {
-                throw new Error('Server not responding');
+                throw new Error('API connection failed');
             }
         } catch (error) {
-            console.error('Server connection failed:', error);
+            console.error('API configuration check failed:', error);
             this.isConnected = false;
-            this.setAIStatus('error', 'AI Service Unavailable');
+            if (error.message === 'API key not configured') {
+                this.setAIStatus('error', 'Please configure API key in aitest.js');
+            } else {
+                this.setAIStatus('error', 'AI Service Configuration Error');
+            }
         }
     }
 
@@ -107,35 +150,68 @@ Remember: You are a safe space for people who have been digitally victimized.`;
     }
 
     async callAI(userMessage) {
+        // Check if API is configured
+        if (!CONFIG.GOOGLE_AI_API_KEY || CONFIG.GOOGLE_AI_API_KEY === 'your-google-ai-api-key-here') {
+            throw new Error('Google AI Studio API key not configured. Please add your API key to the CONFIG section in aitest.js');
+        }
+
         // Add user message to conversation history
         this.conversationHistory.push({
             role: "user",
             content: userMessage
         });
 
-        const response = await fetch('/api/chat', {
+        // Build conversation context for Gemini
+        let conversationText = this.systemPrompt + "\n\n";
+        
+        // Add conversation history
+        this.conversationHistory.forEach(msg => {
+            if (msg.role === "user") {
+                conversationText += `User: ${msg.content}\n\n`;
+            } else if (msg.role === "assistant") {
+                conversationText += `Assistant: ${msg.content}\n\n`;
+            }
+        });
+        
+        conversationText += "Assistant: ";
+
+        // Call Google AI Studio API
+        const response = await fetch(`${CONFIG.API_URL}?key=${CONFIG.GOOGLE_AI_API_KEY}`, {
             method: 'POST',
             headers: {
                 'Content-Type': 'application/json'
             },
             body: JSON.stringify({
-                messages: [
-                    {
-                        role: "system",
-                        content: this.systemPrompt
-                    },
-                    ...this.conversationHistory
-                ]
+                contents: [{
+                    parts: [{ text: conversationText }]
+                }],
+                generationConfig: {
+                    maxOutputTokens: CONFIG.MAX_TOKENS,
+                    temperature: CONFIG.TEMPERATURE
+                }
             })
         });
 
         if (!response.ok) {
-            const errorData = await response.json();
-            throw new Error(errorData.error || `HTTP ${response.status}`);
+            let errorMessage = `API Error: ${response.status} ${response.statusText}`;
+            try {
+                const errorData = await response.json();
+                if (errorData.error && errorData.error.message) {
+                    errorMessage = errorData.error.message;
+                }
+            } catch (e) {
+                // If we can't parse error response, use default message
+            }
+            throw new Error(errorMessage);
         }
 
         const data = await response.json();
-        const assistantMessage = data.message;
+        
+        if (!data.candidates || !data.candidates[0] || !data.candidates[0].content || !data.candidates[0].content.parts) {
+            throw new Error('Invalid response format from Google AI Studio API');
+        }
+
+        const assistantMessage = data.candidates[0].content.parts[0].text;
 
         // Add assistant response to conversation history
         this.conversationHistory.push({
@@ -173,18 +249,30 @@ Remember: You are a safe space for people who have been digitally victimized.`;
     }
 
     handleAIError(error) {
-        this.setAIStatus('error', 'AI Error - Check configuration');
+        this.setAIStatus('error', 'AI Configuration Error');
         
         let errorMessage = 'I apologize, but I\'m having trouble connecting to the AI service right now. ';
         
-        if (error.message.includes('401')) {
-            errorMessage += 'Please check your API key in the configuration panel.';
+        if (error.message.includes('API key not configured')) {
+            errorMessage = '🔧 **Configuration Required**: Please add your Google AI Studio API key to get started.\n\n';
+            errorMessage += '**Steps to configure:**\n';
+            errorMessage += '1. Open the `aitest.js` file in a text editor\n';
+            errorMessage += '2. Find the CONFIG section at the top\n';
+            errorMessage += '3. Replace `your-google-ai-api-key-here` with your actual Google AI Studio API key\n';
+            errorMessage += '4. Save the file and refresh this page\n\n';
+            errorMessage += 'Get your API key at: https://aistudio.google.com/app/apikey';
+        } else if (error.message.includes('401') || error.message.includes('403') || error.message.includes('API_KEY_INVALID')) {
+            errorMessage += '**Invalid API Key**: Please check that your Google AI Studio API key is correct in the CONFIG section of aitest.js';
         } else if (error.message.includes('429')) {
-            errorMessage += 'I\'m receiving too many requests. Please wait a moment and try again.';
-        } else if (error.message.includes('quota')) {
-            errorMessage += 'The API quota has been exceeded. Please check your OpenAI account.';
+            errorMessage += '**Rate Limited**: Too many requests. Please wait a moment and try again.';
+        } else if (error.message.includes('quota') || error.message.includes('billing')) {
+            errorMessage += '**Quota Exceeded**: Please check your Google AI Studio account usage limits.';
+        } else if (error.message.includes('model')) {
+            errorMessage += '**Model Error**: The specified model may not be available. Check your API access level.';
+        } else if (error.message.includes('SAFETY')) {
+            errorMessage += '**Content Safety**: The response was blocked due to safety policies. Please try rephrasing your question.';
         } else {
-            errorMessage += 'Please try again or check your internet connection.';
+            errorMessage += `**Error Details**: ${error.message}\n\nPlease check your configuration and try again.`;
         }
 
         this.addMessageToChat('assistant', errorMessage);
