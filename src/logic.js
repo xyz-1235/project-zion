@@ -94,7 +94,7 @@ class ZionChatbot {
     }
     
     addWelcomeMessage() {
-        const welcomeMessage = "Welcome to Project Zion. I'm here to help with cybersecurity concerns and digital safety. How can I assist you?";
+        const welcomeMessage = "Hi, I'm Zion. You're safe here. How can I help?";
         this.displayMessage(welcomeMessage, 'bot');
     }
     
@@ -200,9 +200,12 @@ class ZionChatbot {
     }
     
     displayMessage(text, sender) {
+        // Limit bot message length for clarity
+        if (sender === 'bot' && text.length > 220) {
+            text = text.slice(0, 200) + '...';
+        }
         const messageDiv = document.createElement('div');
         messageDiv.className = `message ${sender}-message`;
-        
         let avatar;
         switch(sender) {
             case 'bot':
@@ -217,29 +220,46 @@ class ZionChatbot {
             default:
                 avatar = '?';
         }
-        
         const timestamp = new Date().toLocaleTimeString();
-        
         messageDiv.innerHTML = `
             <div class="message-content">
                 <div class="message-avatar">${avatar}</div>
-                <div class="message-text">${this.formatMessage(text)}</div>
-                <div class="message-timestamp">${timestamp}</div>
+                <div class="message-text">${this.formatMessage(text, sender)}
+                    <div class="message-timestamp" style="font-size:0.75rem;opacity:0.7;margin-top:0.3em;">${timestamp}</div>
+                </div>
             </div>
         `;
-        
         this.chatWindow.appendChild(messageDiv);
         this.scrollToBottom();
     }
     
-    formatMessage(text) {
-        // Escape HTML to prevent XSS
-        const div = document.createElement('div');
-        div.textContent = text;
-        const escapedText = div.innerHTML;
-        
-        // Convert line breaks to HTML breaks
-        return escapedText.replace(/\n/g, '<br>');
+    formatMessage(text, sender) {
+        // Only format markdown for bot messages
+        if (sender === 'bot') {
+            let formatted = text;
+            // Bold: **text** or __text__
+            formatted = formatted.replace(/\*\*(.*?)\*\*/g, '<strong>$1</strong>');
+            formatted = formatted.replace(/__(.*?)__/g, '<strong>$1</strong>');
+            // Italic: *text* or _text_
+            formatted = formatted.replace(/\*(.*?)\*/g, '<em>$1</em>');
+            formatted = formatted.replace(/_(.*?)_/g, '<em>$1</em>');
+            // Lists: lines starting with - or *
+            formatted = formatted.replace(/(^|\n)[\-\*] (.*?)(?=\n|$)/g, '$1<li>$2</li>');
+            // Numbered lists: lines starting with 1. 2. etc.
+            formatted = formatted.replace(/(^|\n)\d+\. (.*?)(?=\n|$)/g, '$1<li>$2</li>');
+            // Wrap lists in <ul>
+            if (formatted.includes('<li>')) {
+                formatted = '<ul>' + formatted.replace(/(<li>.*?<\/li>)/gs, '$1') + '</ul>';
+            }
+            // Convert line breaks to <br>
+            formatted = formatted.replace(/\n/g, '<br>');
+            return formatted;
+        } else {
+            // Escape HTML for user messages
+            const div = document.createElement('div');
+            div.textContent = text;
+            return div.innerHTML.replace(/\n/g, '<br>');
+        }
     }
     
     showTypingIndicator() {

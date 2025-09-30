@@ -26,38 +26,24 @@
 
         <main class="main-content">
             <div class="container">
-        <header class="header">
-            <h1>Project Zion</h1>
-            <p>Your Digital Safe Haven</p>
-        </header>
-        
-        <!-- Text Size Controls -->
-        <div class="text-controls">
-            <span class="control-label">Text Size:</span>
-            <button class="text-size-btn" data-size="small">A</button>
-            <button class="text-size-btn active" data-size="medium">A</button>
-            <button class="text-size-btn" data-size="large">A</button>
-        </div>
-        
-        <div id="chat-window" class="chat-window">
-            <div class="message bot-message">
-                <div class="message-content">
-                    <div class="message-avatar">Z</div>
-                    <div class="message-text">
-                        Welcome to Project Zion. I'm here to help you navigate through any cybersecurity concerns or digital safety issues you might be facing. Your privacy and security are my top priorities. How can I assist you today?
-                    </div>
+                <!-- Text Size Controls -->
+                <div class="text-controls">
+                    <span class="control-label">Text Size:</span>
+                    <button class="text-size-btn" data-size="small">A</button>
+                    <button class="text-size-btn active" data-size="medium">A</button>
+                    <button class="text-size-btn" data-size="large">A</button>
+                </div>
+                
+                <div id="chat-window" class="chat-window"></div>
+                
+                <div class="input-area">
+                    <input type="text" id="user-input" placeholder="Type your message here..." autocomplete="off">
+                    <button id="send-btn">Send</button>
                 </div>
             </div>
-        </div>
-        
-        <div class="input-area">
-            <input type="text" id="user-input" placeholder="Type your message here..." autocomplete="off">
-            <button id="send-btn">Send</button>
-        </div>
-    </div>
-    
-    <script src="src/navbar.js"></script>
-    <script src="src/logic.js"></script>
+            
+            <script src="src/navbar.js"></script>
+            <script src="src/logic.js"></script>
         </main>
 
         <footer class="site-footer">
