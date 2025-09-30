@@ -536,3 +536,82 @@ body::before {
 .content-container {
     animation: fadeIn 0.6s ease-out;
 }
+
+/* Screenshot and Print Fixes */
+/* Fixes visual issues when taking screenshots or printing - ONLY applies during print/screenshot */
+@media print {
+    /* Fix background stretching issues in screenshots */
+    html, body {
+        height: 100% !important;
+        min-height: 100vh !important;
+        background: linear-gradient(135deg, #0a0a0f 0%, #131320 100%) !important;
+        background-attachment: fixed !important;
+        background-size: cover !important;
+        background-repeat: no-repeat !important;
+        -webkit-print-color-adjust: exact !important;
+        print-color-adjust: exact !important;
+    }
+    
+    .page-wrapper {
+        min-height: 100vh !important;
+        background: transparent !important;
+    }
+    
+    /* Remove backdrop filters that cause issues in screenshots */
+    .site-header,
+    .side-nav,
+    .emphasis-block,
+    .chat-container,
+    .input-area {
+        backdrop-filter: none !important;
+        -webkit-backdrop-filter: none !important;
+    }
+    
+    /* Ensure solid backgrounds for better screenshot rendering */
+    .site-header {
+        background: rgba(19, 19, 32, 0.98) !important;
+        border-bottom: 1px solid #334155;
+    }
+    
+    .side-nav {
+        background: rgba(19, 19, 32, 0.98) !important;
+        border-right: 1px solid #334155;
+    }
+    
+    .emphasis-block {
+        background: rgba(26, 26, 46, 0.98) !important;
+        border: 1px solid #334155;
+    }
+    
+    /* Fix text rendering for screenshots */
+    * {
+        -webkit-font-smoothing: antialiased !important;
+        -moz-osx-font-smoothing: grayscale !important;
+        text-rendering: optimizeLegibility !important;
+    }
+    
+    /* Remove any transforms that might cause issues */
+    .site-header,
+    .main-nav,
+    .content-container {
+        transform: none !important;
+    }
+}
+
+/* Specific fixes for Edge browser */
+@supports (-ms-ime-align: auto) {
+    .site-header,
+    .side-nav,
+    .emphasis-block {
+        backdrop-filter: none;
+        -webkit-backdrop-filter: none;
+    }
+    
+    .site-header {
+        background: rgba(19, 19, 32, 0.98);
+    }
+    
+    .side-nav {
+        background: rgba(19, 19, 32, 0.98);
+    }
+}
