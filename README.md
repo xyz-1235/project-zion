@@ -31,9 +31,9 @@ Ultimately, Project Zion is a fortress of support, designed to help users find t
 
 ## 🚀 Quick Start
 
-1. **Navigate to application folder:**
+1. **Navigate to root folder:**
    ```bash
-   cd project-zion-app
+   cd project-zion
    ```
 
 2. **Install dependencies:**
@@ -54,6 +54,7 @@ Ultimately, Project Zion is a fortress of support, designed to help users find t
 
 5. **Deploy to Vercel:**
    - Connect your GitHub repository to Vercel
+   - Set root directory to `.` (repository root)
    - Set `COHERE_API_KEY` environment variable in Vercel dashboard
    - Deploy automatically on push!
 
@@ -92,7 +93,7 @@ Our project uses a modern, API-first architecture to ensure security and scalabi
 To run the prototype locally:
 
 1. Clone this repository to your local machine.
-2. Navigate to the `project-zion` folder.
+2. Navigate to the root folder.
 3. Follow the Quick Start instructions above.
 
 ### 🔧 Vercel Deployment
@@ -100,15 +101,15 @@ To run the prototype locally:
 1. **Push to GitHub:**
    ```bash
    git add .
-   git commit -m "Migrate to Vercel"
+   git commit -m "Restructure for Vercel deployment"
    git push origin main
    ```
 
 2. **Connect to Vercel:**
    - Go to [vercel.com](https://vercel.com)
    - Sign in with GitHub
-   - Import your `project-zion` repository
-   - Set root directory to `project-zion`
+   - Import your repository
+   - **Important**: Set root directory to `.` (root) in Vercel project settings
 
 3. **Environment Variables:**
    - In Vercel dashboard → Settings → Environment Variables
