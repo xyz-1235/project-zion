@@ -9,7 +9,7 @@
 
 ## 🌐 Live Demo
 
-**[Visit Project Zion →](https://project-zion.netlify.app/mainpage.html)**
+**[Visit Project Zion →](https://project-zion.netlify.app/)**
 
 Experience the live application deployed on Netlify. No installation required - just click and start using our digital sanctuary.
 
