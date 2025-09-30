@@ -1,0 +1,27 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Page Not Found - Project Zion</title>
+  <link rel="stylesheet" href="styles/shared.css">
+  <style>
+    body { display: grid; place-items: center; min-height: 100vh; background:#0a0a0f; color:#e2e8f0; font-family: Inter, system-ui, -apple-system, Segoe UI, Roboto, sans-serif; }
+    .box { text-align:center; padding: 2rem; border:1px solid #334155; border-radius:16px; background:#131320; max-width:680px; box-shadow: 0 10px 30px rgba(0,0,0,.5); }
+    h1 { font-size:2rem; margin-bottom:.5rem; }
+    p { color:#94a3b8; }
+    a.button { display:inline-block; margin-top:1rem; padding:.7rem 1.1rem; background: linear-gradient(135deg, #00f5ff, #3b82f6); color:#0a0a0f; border-radius:12px; text-decoration:none; font-weight:600; }
+  </style>
+  <script>
+    // Auto-redirect to home after a short delay
+    setTimeout(function(){ window.location.href = '/'; }, 3000);
+  </script>
+</head>
+<body>
+  <div class="box">
+    <h1>404 — Page Not Found</h1>
+    <p>The page you requested doesn't exist. If you were trying to reach "mainpage.html", we've moved things around.</p>
+    <a class="button" href="/">Go to Home</a>
+  </div>
+</body>
+</html>
