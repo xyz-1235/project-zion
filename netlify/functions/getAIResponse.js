@@ -34,14 +34,14 @@ exports.handler = async (event, context) => {
 
   try {
     // Use the provided API key
-    const apiKey = process.env.GOOGLE_AI_API_KEY || 'AIzaSyAM1vn_fYcAeFSDdyV1SXyZShzfnR_RlS8';
+    const apiKey = process.env.GOOGLE_AI_API_KEY;
     if (!apiKey) {
-      console.error('Missing GOOGLE_AI_API_KEY');
+      console.error('Missing GOOGLE_AI_API_KEY environment variable');
       return {
         statusCode: 500,
         headers,
         body: JSON.stringify({
-          error: 'Server configuration error. Please contact support.'
+          error: 'AI is not configured. Please contact the site owner.'
         })
       };
     }
@@ -107,13 +107,23 @@ exports.handler = async (event, context) => {
     if (!geminiResponse.ok) {
       const errorText = await geminiResponse.text();
       console.error(`Gemini API error: ${geminiResponse.status} - ${errorText}`);
-      
-      // Return user-friendly error message
+
+      let statusCode = 500;
+      let message = 'AI service temporarily unavailable. Please try again later.';
+
+      if (geminiResponse.status === 401 || geminiResponse.status === 403) {
+        statusCode = 500;
+        message = 'AI credentials are invalid or missing. Please contact the site owner.';
+      } else if (geminiResponse.status === 429) {
+        statusCode = 429;
+        message = 'The AI service is receiving too many requests. Please wait a moment and try again.';
+      }
+
       return {
-        statusCode: 500,
+        statusCode,
         headers,
         body: JSON.stringify({
-          error: 'AI service temporarily unavailable. Please try again later.'
+          error: message
         })
       };
     }
@@ -133,16 +143,43 @@ exports.handler = async (event, context) => {
       };
     }
 
-    // Extract the AI's reply from the response
-    let aiReply = 'Sorry, I could not generate a response. Please try again.';
-    
-    if (geminiData.candidates && 
-        geminiData.candidates.length > 0 && 
-        geminiData.candidates[0].content && 
-        geminiData.candidates[0].content.parts && 
-        geminiData.candidates[0].content.parts.length > 0) {
-      
-      aiReply = geminiData.candidates[0].content.parts[0].text;
+    if (geminiData.promptFeedback && geminiData.promptFeedback.blockReason) {
+      console.warn('Gemini blocked prompt:', geminiData.promptFeedback);
+      return {
+        statusCode: 400,
+        headers,
+        body: JSON.stringify({
+          error: 'The AI could not answer that request. Please rephrase and try again.'
+        })
+      };
+    }
+
+    const primaryCandidate = Array.isArray(geminiData.candidates)
+      ? geminiData.candidates.find(candidate =>
+          candidate &&
+          candidate.content &&
+          Array.isArray(candidate.content.parts) &&
+          candidate.content.parts.some(part => typeof part.text === 'string' && part.text.trim().length > 0)
+        )
+      : null;
+
+    const aiReply = primaryCandidate
+      ? primaryCandidate.content.parts
+          .map(part => (typeof part.text === 'string' ? part.text.trim() : ''))
+          .filter(Boolean)
+          .join('\n')
+          .trim()
+      : '';
+
+    if (!aiReply) {
+      console.warn('Gemini returned no usable content:', geminiData);
+      return {
+        statusCode: 502,
+        headers,
+        body: JSON.stringify({
+          error: 'The AI did not return any content. Please try again.'
+        })
+      };
     }
 
     // Return successful response

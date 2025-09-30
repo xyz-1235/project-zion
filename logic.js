@@ -117,14 +117,7 @@ class ZionChatbot {
     }
     
     async callAI(message) {
-        // Always try Netlify function first for production deployment
-        try {
-            return await this.callNetlifyFunction(message);
-        } catch (error) {
-            console.log('Netlify function failed, falling back to direct API call...', error.message);
-            // Only fallback to direct API if Netlify function fails
-            return await this.callGeminiDirectly(message);
-        }
+        return await this.callNetlifyFunction(message);
     }
     
     async callNetlifyFunction(message) {
@@ -166,75 +159,10 @@ class ZionChatbot {
             }
             
             if (error instanceof TypeError && error.message.includes('fetch')) {
-                // Fallback to direct API call if Netlify function fails
-                console.log('Netlify function unavailable, falling back to direct API call...');
-                return await this.callGeminiDirectly(message);
+                throw new Error('Unable to reach the AI service. Check your connection or try again soon.');
             }
-            
-            throw error;
-        }
-    }
-    
-    async callGeminiDirectly(message) {
-        const controller = new AbortController();
-        const timeoutId = setTimeout(() => controller.abort(), this.requestTimeout);
-        
-        try {
-            // Using the exact format from Google AI documentation
-            const API_KEY = 'AIzaSyAM1vn_fYcAeFSDdyV1SXyZShzfnR_RlS8';
-            const API_ENDPOINT = 'https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash-latest:generateContent';
-            
-            const response = await fetch(API_ENDPOINT, {
-                method: 'POST',
-                headers: {
-                    'Content-Type': 'application/json',
-                    'x-goog-api-key': API_KEY
-                },
-                body: JSON.stringify({
-                    contents: [{ 
-                        parts: [{ 
-                            text: message 
-                        }] 
-                    }]
-                }),
-                signal: controller.signal
-            });
-            
-            clearTimeout(timeoutId);
-            
-            if (!response.ok) {
-                const errorText = await response.text();
-                console.error(`Gemini API error: ${response.status} - ${errorText}`);
-                throw new Error('AI service temporarily unavailable. Please try again later.');
-            }
-            
-            const data = await response.json();
-            console.log('API Response:', data);
-            
-            // Extract the AI's reply from the response
-            if (data.candidates && 
-                data.candidates.length > 0 && 
-                data.candidates[0].content && 
-                data.candidates[0].content.parts && 
-                data.candidates[0].content.parts.length > 0) {
-                
-                return data.candidates[0].content.parts[0].text;
-            }
-            
-            throw new Error('No response generated. Please try again.');
-            
-        } catch (error) {
-            clearTimeout(timeoutId);
-            
-            if (error.name === 'AbortError') {
-                throw new Error('Request timed out. Please try again.');
-            }
-            
-            if (error instanceof TypeError && error.message.includes('fetch')) {
-                throw new Error('Network error. Please check your connection and try again.');
-            }
-            
-            throw error;
+
+            throw new Error(error.message || 'The AI service encountered an unexpected error.');
         }
     }
     
