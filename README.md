@@ -9,9 +9,19 @@
 
 ---
 
+## 🛡️ Why "Zion"? 
+
+In the world of *The Matrix*, Zion is the last human city—a hidden, underground sanctuary where humanity is safe from a hostile, machine-controlled world. Our project draws a direct parallel to this: **Project Zion aims to be a digital sanctuary**, a secure and anonymous safe haven for individuals facing the hostile and often overwhelming threats of the online world.
+
+We chose the name Zion because it represents more than just a place of passive safety; it represents a place of **resistance and empowerment**. This philosophy is at the core of our AI companion's design. It doesn't just offer comfort; it provides users with the actionable intelligence and clear guidance needed to "wake up" from the confusion of an attack, regain control, and fight back against digital threats.
+
+Ultimately, Project Zion is a fortress of support, designed to help users find their strength in the face of digital adversity.
+
+---
+
 ### 🖼️ Screenshot / Demo
 
-W.I.P.
+`![Project Zion Demo](link_to_your_screenshot.png)`
 
 ---
 
@@ -64,4 +74,4 @@ This project is licensed under the **MIT License**. See the `LICENSE` file in th
 * Neeraj Kudale
 * Hruday Bothra
 * Abhiram Dighe
-* [Your Name Here]
+* Kshitij Sonavane
