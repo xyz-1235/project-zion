@@ -7,6 +7,12 @@
 
 **Project Zion** was developed for the **TENET'25 Hackathon** ("The Matrix" theme). It is a web-based, secure safe haven designed to provide immediate and empathetic support to individuals facing cyberbullying, online scams, and other forms of digital distress.
 
+## 🌐 Live Demo
+
+**[Visit Project Zion →](https://project-zion.netlify.app/mainpage.html)**
+
+Experience the live application deployed on Netlify. No installation required - just click and start using our digital sanctuary.
+
 ---
 
 ## 🛡️ Why "Zion"? 
