@@ -39,7 +39,7 @@ exports.handler = async function(event, context) {
             throw new Error('API key not configured in environment variables');
         }
 
-        const API_URL = 'https://generativelanguage.googleapis.com/v1beta/models/gemini-pro:generateContent';
+        const API_URL = 'https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash-latest:generateContent';
 
         // Build conversation context for Gemini
         let conversationText = systemPrompt + "\n\n";
@@ -55,7 +55,7 @@ exports.handler = async function(event, context) {
         
         conversationText += "Assistant: ";
 
-        // Call Google AI Studio API
+        // Call Google AI Studio API with updated format
         const response = await fetch(`${API_URL}?key=${GOOGLE_AI_API_KEY}`, {
             method: 'POST',
             headers: {
@@ -63,17 +63,82 @@ exports.handler = async function(event, context) {
             },
             body: JSON.stringify({
                 contents: [{
-                    parts: [{ text: conversationText }]
+                    parts: [{ 
+                        text: conversationText 
+                    }]
                 }],
                 generationConfig: {
                     maxOutputTokens: 1000,
-                    temperature: 0.7
-                }
+                    temperature: 0.7,
+                    topP: 0.8,
+                    topK: 10
+                },
+                safetySettings: [
+                    {
+                        category: "HARM_CATEGORY_HARASSMENT",
+                        threshold: "BLOCK_ONLY_HIGH"
+                    },
+                    {
+                        category: "HARM_CATEGORY_HATE_SPEECH", 
+                        threshold: "BLOCK_ONLY_HIGH"
+                    },
+                    {
+                        category: "HARM_CATEGORY_SEXUALLY_EXPLICIT",
+                        threshold: "BLOCK_ONLY_HIGH"
+                    },
+                    {
+                        category: "HARM_CATEGORY_DANGEROUS_CONTENT",
+                        threshold: "BLOCK_ONLY_HIGH"
+                    }
+                ]
             })
         });
 
         if (!response.ok) {
             const errorData = await response.json();
+            console.error('Google AI API Error:', response.status, errorData);
+            
+            // If the model is not found, try with a fallback model
+            if (response.status === 404 && errorData.error?.message?.includes('not found')) {
+                console.log('Trying fallback model: gemini-pro');
+                
+                const fallbackURL = 'https://generativelanguage.googleapis.com/v1beta/models/gemini-pro:generateContent';
+                const fallbackResponse = await fetch(`${fallbackURL}?key=${GOOGLE_AI_API_KEY}`, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify({
+                        contents: [{
+                            parts: [{ text: conversationText }]
+                        }],
+                        generationConfig: {
+                            maxOutputTokens: 1000,
+                            temperature: 0.7
+                        }
+                    })
+                });
+                
+                if (fallbackResponse.ok) {
+                    const fallbackData = await fallbackResponse.json();
+                    if (fallbackData.candidates?.[0]?.content?.parts?.[0]?.text) {
+                        return {
+                            statusCode: 200,
+                            headers: {
+                                'Access-Control-Allow-Origin': '*',
+                                'Access-Control-Allow-Headers': 'Content-Type',
+                                'Content-Type': 'application/json'
+                            },
+                            body: JSON.stringify({ 
+                                message: fallbackData.candidates[0].content.parts[0].text,
+                                success: true,
+                                model: 'gemini-pro (fallback)'
+                            })
+                        };
+                    }
+                }
+            }
+            
             throw new Error(`Google AI API Error: ${response.status} - ${errorData.error?.message || 'Unknown error'}`);
         }
 
@@ -95,7 +160,8 @@ exports.handler = async function(event, context) {
             },
             body: JSON.stringify({ 
                 message: aiMessage,
-                success: true 
+                success: true,
+                model: 'gemini-1.5-flash-latest'
             })
         };
 
