@@ -39,7 +39,7 @@ exports.handler = async function(event, context) {
             throw new Error('API key not configured in environment variables');
         }
 
-        const API_URL = 'https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash-latest:generateContent';
+        const API_URL = 'https://generativelanguage.googleapis.com/v1/models/gemini-1.5-flash:generateContent';
 
         // Build conversation context for Gemini
         let conversationText = systemPrompt + "\n\n";
@@ -102,7 +102,7 @@ exports.handler = async function(event, context) {
             if (response.status === 404 && errorData.error?.message?.includes('not found')) {
                 console.log('Trying fallback model: gemini-pro');
                 
-                const fallbackURL = 'https://generativelanguage.googleapis.com/v1beta/models/gemini-pro:generateContent';
+                const fallbackURL = 'https://generativelanguage.googleapis.com/v1/models/gemini-pro:generateContent';
                 const fallbackResponse = await fetch(`${fallbackURL}?key=${GOOGLE_AI_API_KEY}`, {
                     method: 'POST',
                     headers: {
@@ -161,7 +161,7 @@ exports.handler = async function(event, context) {
             body: JSON.stringify({ 
                 message: aiMessage,
                 success: true,
-                model: 'gemini-1.5-flash-latest'
+                model: 'gemini-1.5-flash'
             })
         };
 
