@@ -1,7 +1,1 @@
-{
-  "functions": {
-    "api/getAIResponse.js": {
-      "runtime": "nodejs18.x"
-    }
-  }
-}
+{}
