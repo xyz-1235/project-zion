@@ -1,7 +1,7 @@
 # Project Zion
 
 [![License: MIT](https://img.shields.io/badge/License-MIT-blue.svg)](https://opensource.org/licenses/MIT)
-[![Project Status: MVP](https://img.shields.io/badge/status-MVP-brightgreen.svg)](https://github.com/CreeperBoy75/project-zion/)
+[![Project Status: Prototype](https://img.shields.io/badge/status-Prototype-blue.svg)](https://github.com/CreeperBoy75/project-zion/)
 
 > An anonymous, AI-powered sanctuary for victims of cybercrime.
 
@@ -19,9 +19,37 @@ Ultimately, Project Zion is a fortress of support, designed to help users find t
 
 ---
 
-### 🖼️ Screenshot / Demo
+## 🚀 Quick Start
 
-![Main page (for current version)](assets/mainpage.png)
+1. **Navigate to application folder:**
+   ```bash
+   cd project-zion-app
+   ```
+
+2. **Install dependencies:**
+   ```bash
+   npm install
+   ```
+
+3. **Set up environment:**
+   ```bash
+   cp .env.example .env
+   # Add your Cohere API key to .env
+   ```
+
+4. **Run locally:**
+   ```bash
+   npm run dev
+   ```
+
+5. **Deploy to Netlify:**
+   - Drag the `project-zion-app` folder to Netlify
+   - Set `COHERE_API_KEY` environment variable
+   - Deploy!
+
+## 🖼️ Screenshot / Demo
+
+![Main page (for current version)](project-zion-app/assets/mainpage.png)
 
 ---
 
@@ -45,7 +73,7 @@ The project leverages a modern, API-first architecture to deliver a powerful exp
 
 Our project uses a modern, API-first architecture to ensure security and scalability. The data flow is illustrated below:
 
-![System Architecture Flowchart for Project Zion](assets/flowchart.png)
+![System Architecture Flowchart for Project Zion](project-zion-app/assets/flowchart.png)
 
 ---
 
@@ -53,8 +81,9 @@ Our project uses a modern, API-first architecture to ensure security and scalabi
 
 To run the prototype locally:
 
-1.  Clone this repository to your local machine.
-2.  Open the `mainpage.html` file in your web browser.
+1. Clone this repository to your local machine.
+2. Navigate to the `project-zion-app` folder.
+3. Follow the Quick Start instructions above.
 
 ## 🌱 Future Development
 
