@@ -4,10 +4,7 @@
   "description": "Project Zion AI-powered cybersecurity assistance platform",
   "main": "index.html",
   "scripts": {
-    "build": "echo 'No build step required'",
-    "start": "echo 'Static site - no start command needed'",
-    "dev": "vercel dev",
-    "deploy": "vercel --prod"
+    "dev": "vercel dev"
   },
   "dependencies": {
     "cohere-ai": "^7.0.0"
@@ -16,6 +13,5 @@
     "vercel": "^32.0.0"
   },
   "author": "Project Zion Team",
-  "license": "MIT",
-  "type": "module"
+  "license": "MIT"
 }
