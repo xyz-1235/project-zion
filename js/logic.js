@@ -200,10 +200,6 @@ class ZionChatbot {
     }
     
     displayMessage(text, sender) {
-        // Limit bot message length for clarity
-        if (sender === 'bot' && text.length > 220) {
-            text = text.slice(0, 200) + '...';
-        }
         const messageDiv = document.createElement('div');
         messageDiv.className = `message ${sender}-message`;
         let avatar;

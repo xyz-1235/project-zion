@@ -195,7 +195,7 @@ body::before {
 .chat-window {
     flex: 1;
     min-height: 500px;
-    max-height: 700px;
+    max-height: 800px;
     background: rgba(26, 26, 46, 0.8);
     border: 1px solid var(--border-default);
     border-radius: 20px;

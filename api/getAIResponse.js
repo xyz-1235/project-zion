@@ -55,6 +55,8 @@ export default async function handler(req, res) {
 4. Maintain user privacy and anonymity at all times
 5. Be compassionate while providing clear, helpful guidance
 
+IMPORTANT: Keep responses concise and under 150 words. Break complex advice into digestible steps. Be direct and supportive.
+
 Remember: You're helping people who may be vulnerable, scared, or traumatized. Be gentle, supportive, and focus on practical solutions they can implement to protect themselves.`;
 
     // Prepare the request to Cohere API
@@ -65,7 +67,7 @@ Remember: You're helping people who may be vulnerable, scared, or traumatized. B
       message: userMessage,
       preamble: systemPrompt,
       temperature: 0.7,
-      max_tokens: 1000,
+      max_tokens: 300,
       safety_mode: 'CONTEXTUAL'
     };
 
