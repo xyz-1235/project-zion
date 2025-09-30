@@ -1,6 +1,6 @@
 /**
  * Project Zion - AI-Powered Chatbot Application Logic
- * Integrates with Google Gemini AI through secure Netlify Functions
+ * Integrates with Cohere AI through secure Netlify Functions
  */
 
 class ZionChatbot {

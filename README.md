@@ -27,7 +27,7 @@ Ultimately, Project Zion is a fortress of support, designed to help users find t
 
 ## 🌟 Key Features
 
-* **Empathetic AI Companion:** At the core of the platform is "Zion," an AI powered by an advanced AI API, trained to provide supportive, non-judgmental conversation.
+* **Empathetic AI Companion:** At the core of the platform is "Zion," an AI powered by Cohere's advanced language models, trained to provide supportive, non-judgmental conversation.
 * **Actionable Intelligence:** Zion offers clear, step-by-step guidance for various cybercrimes, helping users understand how to secure their accounts, report incidents, and mitigate damage.
 * **Secure & Anonymous:** The platform is designed to be a true sanctuary, requiring no personal information to use, ensuring complete user anonymity.
 * **Responsive UI:** A clean, modern, and calming user interface built with a "cyberpunk sanctuary" theme that is fully responsive for both desktop and mobile use.
@@ -38,7 +38,7 @@ The project leverages a modern, API-first architecture to deliver a powerful exp
 
 * **Front-End:** `HTML5`, `CSS3`, `JavaScript`
 * **Backend:** `Serverless Function` (Designed as a secure API proxy)
-* **Core AI:** `Advanced AI API`
+* **Core AI:** `Cohere AI API`
 * **Version Control:** `Git` & `GitHub`
 
 ## 🏛️ System Architecture

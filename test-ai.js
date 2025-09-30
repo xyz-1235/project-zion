@@ -55,8 +55,8 @@ async function testAIFunction() {
 
   // Test 3: Missing API key
   console.log('\n📝 Test 3: Missing API key');
-  const originalKey = process.env.GOOGLE_AI_API_KEY;
-  delete process.env.GOOGLE_AI_API_KEY;
+  const originalKey = process.env.COHERE_API_KEY;
+  delete process.env.COHERE_API_KEY;
 
   const event3 = {
     httpMethod: 'POST',
@@ -73,7 +73,7 @@ async function testAIFunction() {
   }
 
   // Restore API key
-  if (originalKey) process.env.GOOGLE_AI_API_KEY = originalKey;
+  if (originalKey) process.env.COHERE_API_KEY = originalKey;
 
   console.log('\n' + '='.repeat(50));
 
@@ -98,14 +98,15 @@ async function testAIFunction() {
   console.log('- Empty message: Should return 400 with error');
   console.log('- Missing API key: Should return 500 with configuration error');
   console.log('- OPTIONS request: Should return 200 with CORS headers');
-  console.log('\n🔧 To test with real Gemini API, set GOOGLE_AI_API_KEY in .env file');
+  console.log('\n🔧 To test with real Cohere API, set COHERE_API_KEY in .env file');
 }
 
-if (process.env.GOOGLE_AI_API_KEY) {
+// Check if API key is set
+if (process.env.COHERE_API_KEY) {
   console.log('🔑 API key found in environment');
 } else {
   console.log('⚠️  No API key found - using mock responses');
-  console.log('💡 Create .env file with GOOGLE_AI_API_KEY=your_key_here for real testing');
+  console.log('💡 Create .env file with COHERE_API_KEY=your_key_here for real testing');
 }
 
 testAIFunction().catch(console.error);

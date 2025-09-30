@@ -1,13 +1,13 @@
 /**
  * Netlify Serverless Function for Project Zion AI Integration
- * Securely handles communication with Google Gemini API
+ * Securely handles communication with Cohere API
  */
 
 exports.handler = async (event, context) => {
   // Set CORS headers for all responses
   const headers = {
     'Access-Control-Allow-Origin': '*',
-    'Access-Control-Allow-Headers': 'Content-Type',
+    'Access-Control-Allow-Headers': 'Content-Type, Authorization',
     'Access-Control-Allow-Methods': 'POST, OPTIONS',
     'Content-Type': 'application/json'
   };
@@ -34,9 +34,9 @@ exports.handler = async (event, context) => {
 
   try {
     // Use the provided API key
-    const apiKey = process.env.GOOGLE_AI_API_KEY;
+    const apiKey = process.env.COHERE_API_KEY;
     if (!apiKey) {
-      console.error('Missing GOOGLE_AI_API_KEY environment variable');
+      console.error('Missing COHERE_API_KEY environment variable');
       return {
         statusCode: 500,
         headers,
@@ -82,41 +82,56 @@ exports.handler = async (event, context) => {
       };
     }
 
-    // Prepare the request to Google Gemini API using latest format
-    const geminiUrl = 'https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash-latest:generateContent';
+    // Prepare system prompt for cybersecurity support
+    const systemPrompt = `You are an AI assistant for Project Zion, a digital sanctuary providing support for cybercrime victims. Your role is to:
+
+1. Provide empathetic, non-judgmental support for people facing cyberbullying, online scams, privacy violations, and digital harassment
+2. Offer practical, actionable cybersecurity advice and safety tips
+3. Guide users toward appropriate resources and reporting mechanisms
+4. Maintain user privacy and anonymity at all times
+5. Be compassionate while providing clear, helpful guidance
+
+Remember: You're helping people who may be vulnerable, scared, or traumatized. Be gentle, supportive, and focus on practical solutions they can implement to protect themselves.`;
+
+    // Prepare the request to Cohere API
+    const cohereUrl = 'https://api.cohere.ai/v1/chat';
     
-    const geminiRequestBody = {
-      contents: [{
-        parts: [{
-          text: userMessage
-        }]
-      }]
+    const cohereRequestBody = {
+      model: 'command-r-plus-08-2024',
+      message: userMessage,
+      preamble: systemPrompt,
+      temperature: 0.7,
+      max_tokens: 1000,
+      safety_mode: 'CONTEXTUAL'
     };
 
-    // Make the API call to Google Gemini using the official format
-    const geminiResponse = await fetch(geminiUrl, {
+    // Make the API call to Cohere
+    const cohereResponse = await fetch(cohereUrl, {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
-        'x-goog-api-key': apiKey
+        'Authorization': `Bearer ${apiKey}`
       },
-      body: JSON.stringify(geminiRequestBody)
+      body: JSON.stringify(cohereRequestBody)
     });
 
-    // Handle non-200 responses from Gemini API
-    if (!geminiResponse.ok) {
-      const errorText = await geminiResponse.text();
-      console.error(`Gemini API error: ${geminiResponse.status} - ${errorText}`);
+    // Handle non-200 responses from Cohere API
+    if (!cohereResponse.ok) {
+      const errorText = await cohereResponse.text();
+      console.error(`Cohere API error: ${cohereResponse.status} - ${errorText}`);
 
       let statusCode = 500;
       let message = 'AI service temporarily unavailable. Please try again later.';
 
-      if (geminiResponse.status === 401 || geminiResponse.status === 403) {
+      if (cohereResponse.status === 401 || cohereResponse.status === 403) {
         statusCode = 500;
         message = 'AI credentials are invalid or missing. Please contact the site owner.';
-      } else if (geminiResponse.status === 429) {
+      } else if (cohereResponse.status === 429) {
         statusCode = 429;
         message = 'The AI service is receiving too many requests. Please wait a moment and try again.';
+      } else if (cohereResponse.status === 400) {
+        statusCode = 400;
+        message = 'Invalid request. Please try rephrasing your message.';
       }
 
       return {
@@ -128,12 +143,12 @@ exports.handler = async (event, context) => {
       };
     }
 
-    // Parse the response from Gemini
-    let geminiData;
+    // Parse the response from Cohere
+    let cohereData;
     try {
-      geminiData = await geminiResponse.json();
+      cohereData = await cohereResponse.json();
     } catch (parseError) {
-      console.error('Failed to parse Gemini response:', parseError);
+      console.error('Failed to parse Cohere response:', parseError);
       return {
         statusCode: 500,
         headers,
@@ -143,41 +158,34 @@ exports.handler = async (event, context) => {
       };
     }
 
-    if (geminiData.promptFeedback && geminiData.promptFeedback.blockReason) {
-      console.warn('Gemini blocked prompt:', geminiData.promptFeedback);
-      return {
-        statusCode: 400,
-        headers,
-        body: JSON.stringify({
-          error: 'The AI could not answer that request. Please rephrase and try again.'
-        })
-      };
+    // Extract the AI's reply from the response
+    let aiReply = '';
+    
+    if (cohereData.text && typeof cohereData.text === 'string') {
+      aiReply = cohereData.text.trim();
+    } else if (cohereData.message && typeof cohereData.message === 'string') {
+      aiReply = cohereData.message.trim();
     }
 
-    const primaryCandidate = Array.isArray(geminiData.candidates)
-      ? geminiData.candidates.find(candidate =>
-          candidate &&
-          candidate.content &&
-          Array.isArray(candidate.content.parts) &&
-          candidate.content.parts.some(part => typeof part.text === 'string' && part.text.trim().length > 0)
-        )
-      : null;
-
-    const aiReply = primaryCandidate
-      ? primaryCandidate.content.parts
-          .map(part => (typeof part.text === 'string' ? part.text.trim() : ''))
-          .filter(Boolean)
-          .join('\n')
-          .trim()
-      : '';
-
     if (!aiReply) {
-      console.warn('Gemini returned no usable content:', geminiData);
+      console.warn('Cohere returned no usable content:', cohereData);
       return {
         statusCode: 502,
         headers,
         body: JSON.stringify({
           error: 'The AI did not return any content. Please try again.'
+        })
+      };
+    }
+
+    // Check if the response was filtered for safety
+    if (cohereData.is_search_required === false && cohereData.safety_mode === 'STRICT') {
+      console.warn('Cohere filtered response for safety:', cohereData);
+      return {
+        statusCode: 400,
+        headers,
+        body: JSON.stringify({
+          error: 'The AI could not answer that request. Please rephrase and try again.'
         })
       };
     }

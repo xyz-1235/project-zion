@@ -37,7 +37,7 @@ Your project is now ready for Netlify deployment with these key files:
 
 2. **Add API Key**:
    - Click "Add variable"
-   - Key: `GOOGLE_AI_API_KEY`
+   - Key: `COHERE_API_KEY`
    - Value: `AIzaSyAM1vn_fYcAeFSDdyV1SXyZShzfnR_RlS8`
    - Click "Save"
 
@@ -76,7 +76,7 @@ Your `netlify.toml` file configures:
 ## 🛠️ Troubleshooting
 
 ### AI Not Working?
-1. **Check Environment Variable**: Ensure `GOOGLE_AI_API_KEY` is set correctly
+1. **Check Environment Variable**: Ensure `COHERE_API_KEY` is set correctly
 2. **Check Function Logs**: Go to "Functions" tab in Netlify dashboard
 3. **Redeploy**: Try triggering a new deployment
 
@@ -87,7 +87,7 @@ Your `netlify.toml` file configures:
 
 ### Function Errors?
 1. **Check Function Logs**: Netlify dashboard → Functions → View logs
-2. **API Key Issues**: Verify the Google API key is valid
+2. **API Key Issues**: Verify the Cohere API key is valid
 3. **CORS Problems**: The `netlify.toml` should handle this automatically
 
 ## 📝 File Structure for Deployment
