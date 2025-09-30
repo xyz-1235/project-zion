@@ -1,8 +1,8 @@
 // Project Zion - Netlify Serverless Function for AI Chat
 // This runs securely on Netlify's servers, protecting your API key
-// Version: 2.2 - Fixed API endpoints for supported models
+// Version: 2.3 - Updated to use current stable Gemini models
 
-const FUNCTION_VERSION = "2.2";
+const FUNCTION_VERSION = "2.3";
 
 exports.handler = async function(event, context) {
     // Only allow POST requests
@@ -43,8 +43,8 @@ exports.handler = async function(event, context) {
 
         // Try multiple working endpoints in order of preference
         const API_ENDPOINTS = [
+            'https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-pro:generateContent',
             'https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash:generateContent',
-            'https://generativelanguage.googleapis.com/v1beta/models/gemini-pro:generateContent',
             'https://generativelanguage.googleapis.com/v1/models/gemini-pro:generateContent'
         ];
 
