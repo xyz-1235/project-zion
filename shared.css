@@ -156,17 +156,133 @@ body::before {
 }
 
 /* Main Content Container */
-.content-container {
-    max-width: 800px;
+.main-content {
+    flex: 1;
+    padding: 0 2rem;
+    display: flex;
+    gap: 2rem;
+    max-width: 1400px;
     margin: 0 auto;
-    padding: 3rem 2rem;
+}
+
+/* Side Navigation Menu (Wikipedia-style) */
+.side-nav {
+    width: 250px;
+    flex-shrink: 0;
+    position: sticky;
+    top: 100px;
+    height: fit-content;
+    max-height: calc(100vh - 120px);
+    overflow-y: auto;
+    background: var(--surface-bg);
+    border: 1px solid var(--border-default);
+    border-radius: 12px;
+    padding: 1.5rem;
+    box-shadow: var(--shadow-soft);
+    backdrop-filter: blur(10px);
+}
+
+.side-nav h3 {
+    color: var(--zion-cyan);
+    font-size: 1rem;
+    font-weight: 600;
+    margin-bottom: 1rem;
+    padding-bottom: 0.5rem;
+    border-bottom: 1px solid var(--border-default);
+}
+
+.side-nav ul {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+}
+
+.side-nav li {
+    margin: 0;
+}
+
+.side-nav a {
+    display: block;
+    color: var(--text-secondary);
+    text-decoration: none;
+    padding: 0.5rem 0;
+    font-size: 0.875rem;
+    line-height: 1.4;
+    border-left: 2px solid transparent;
+    padding-left: 0.75rem;
+    margin-left: -0.75rem;
+    transition: all 0.2s ease;
+}
+
+.side-nav a:hover {
+    color: var(--text-primary);
+    border-left-color: var(--zion-cyan);
+    background: var(--hover-bg);
+    padding-left: 1rem;
+}
+
+.side-nav a.active {
+    color: var(--zion-cyan);
+    border-left-color: var(--zion-cyan);
+    background: var(--hover-bg);
+    font-weight: 500;
+}
+
+/* Nested navigation items */
+.side-nav ul ul {
+    margin-left: 1rem;
+    margin-top: 0.25rem;
+}
+
+.side-nav ul ul a {
+    font-size: 0.8rem;
+    color: var(--text-muted);
+}
+
+/* Hide side nav on mobile */
+@media (max-width: 1024px) {
+    .side-nav {
+        display: none;
+    }
+    
+    .main-content {
+        flex-direction: column;
+    }
+}
+
+/* Mobile table of contents toggle */
+.mobile-toc-toggle {
+    display: none;
+    background: var(--surface-bg);
+    border: 1px solid var(--border-default);
+    color: var(--text-primary);
+    padding: 0.75rem 1rem;
+    border-radius: 8px;
+    margin-bottom: 1rem;
+    cursor: pointer;
+    font-size: 0.875rem;
+    width: 100%;
+    text-align: left;
+}
+
+@media (max-width: 1024px) {
+    .mobile-toc-toggle {
+        display: block;
+    }
+}
+
+.content-container {
+    max-width: none;
+    flex: 1;
+    margin: 0;
+    margin-top: 2rem;
+    margin-bottom: 2rem;
     background: var(--tertiary-bg);
     border-radius: 16px;
     border: 1px solid var(--border-default);
     box-shadow: var(--shadow-deep);
     backdrop-filter: blur(10px);
-    margin-top: 2rem;
-    margin-bottom: 2rem;
+    padding: 3rem 2rem;
     position: relative;
 }
 
@@ -323,10 +439,7 @@ body::before {
     flex-direction: column;
 }
 
-.main-content {
-    flex: 1;
-    padding: 0 2rem;
-}
+/* Remove old main-content padding since it's now handled above */
 
 /* Mobile hamburger menu (for future enhancement) */
 .mobile-menu-toggle {
