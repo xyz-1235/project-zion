@@ -370,12 +370,112 @@ body::before {
 
 /* Resource lists styling */
 .resource-category {
-    background: var(--surface-bg);
-    border: 1px solid var(--border-default);
-    border-radius: 12px;
+    background: rgba(0, 255, 157, 0.05);
+    border: 1px solid rgba(0, 255, 157, 0.2);
+    border-radius: 8px;
     padding: 1.5rem;
-    margin: 1.5rem 0;
-    box-shadow: var(--shadow-soft);
+    margin: 1rem 0;
+    transition: all 0.3s ease;
+}
+
+.resource-category:hover {
+    background: rgba(0, 255, 157, 0.08);
+    border-color: rgba(0, 255, 157, 0.3);
+    transform: translateY(-2px);
+}
+
+.resource-category h3 {
+    color: var(--accent-color);
+    margin-bottom: 1rem;
+    font-size: 1.2rem;
+}
+
+.resource-category ul {
+    list-style: none;
+    padding: 0;
+}
+
+.resource-category li {
+    margin: 0.8rem 0;
+    padding-left: 1rem;
+    position: relative;
+    line-height: 1.6;
+}
+
+.resource-category li::before {
+    content: "→";
+    position: absolute;
+    left: 0;
+    color: var(--accent-color);
+    font-weight: bold;
+}
+
+.resource-category a {
+    color: var(--accent-color);
+    text-decoration: none;
+    transition: color 0.3s ease;
+}
+
+.resource-category a:hover {
+    color: #ffffff;
+    text-decoration: underline;
+}
+
+.resource-category strong {
+    color: var(--text-color);
+    display: block;
+    margin-bottom: 0.3rem;
+}
+
+/* Site Footer */
+.site-footer {
+    background: rgba(0, 20, 40, 0.95);
+    border-top: 1px solid rgba(0, 255, 157, 0.2);
+    padding: 2rem 0;
+    margin-top: 3rem;
+    backdrop-filter: blur(10px);
+}
+
+.footer-container {
+    max-width: 1200px;
+    margin: 0 auto;
+    padding: 0 2rem;
+    text-align: center;
+    color: var(--muted-color);
+}
+
+.footer-container p {
+    margin: 0.5rem 0;
+    font-size: 0.9rem;
+}
+
+.footer-links {
+    margin-top: 1rem;
+    display: flex;
+    justify-content: center;
+    gap: 1.5rem;
+    flex-wrap: wrap;
+}
+
+.footer-links a {
+    color: var(--muted-color);
+    text-decoration: none;
+    font-size: 0.9rem;
+    transition: color 0.3s ease;
+}
+
+.footer-links a:hover {
+    color: var(--accent-color);
+}
+
+@media (max-width: 768px) {
+    .footer-links {
+        gap: 1rem;
+    }
+    
+    .footer-links a {
+        font-size: 0.8rem;
+    }
 }
 
 .resource-category h3 {

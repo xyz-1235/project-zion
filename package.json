@@ -5,10 +5,17 @@
   "main": "index.js",
   "scripts": {
     "build": "echo 'No build step required'",
-    "start": "echo 'Static site - no start command needed'"
+    "start": "echo 'Static site - no start command needed'",
+    "dev": "netlify dev",
+    "test": "node test-ai.js"
   },
-  "dependencies": {},
-  "devDependencies": {},
+  "dependencies": {
+    "node-fetch": "^2.6.7"
+  },
+  "devDependencies": {
+    "dotenv": "^16.0.3",
+    "netlify-cli": "^23.8.1"
+  },
   "author": "Project Zion Team",
   "license": "MIT"
 }
