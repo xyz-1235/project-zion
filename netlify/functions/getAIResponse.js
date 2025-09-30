@@ -82,8 +82,8 @@ exports.handler = async (event, context) => {
       };
     }
 
-    // Prepare the request to Google Gemini API
-    const geminiUrl = 'https://generativelanguage.googleapis.com/v1/models/gemini-1.0-pro:generateContent';
+    // Prepare the request to Google Gemini API using latest format
+    const geminiUrl = 'https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash-latest:generateContent';
     
     const geminiRequestBody = {
       contents: [{
@@ -93,11 +93,12 @@ exports.handler = async (event, context) => {
       }]
     };
 
-    // Make the API call to Google Gemini
-    const geminiResponse = await fetch(`${geminiUrl}?key=${apiKey}`, {
+    // Make the API call to Google Gemini using the official format
+    const geminiResponse = await fetch(geminiUrl, {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
+        'x-goog-api-key': apiKey
       },
       body: JSON.stringify(geminiRequestBody)
     });

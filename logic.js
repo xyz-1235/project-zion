@@ -117,24 +117,12 @@ class ZionChatbot {
     }
     
     async callAI(message) {
-        // Check if we're running locally or on Netlify
-        const isLocal = window.location.hostname === 'localhost' || 
-                       window.location.hostname === '127.0.0.1' || 
-                       window.location.protocol === 'file:';
-        
-        const isNetlify = window.location.hostname.includes('netlify.app') || 
-                         window.location.hostname.includes('netlify.com');
-        
-        // For Netlify deployment, always try the function first
-        if (isNetlify || !isLocal) {
-            try {
-                return await this.callNetlifyFunction(message);
-            } catch (error) {
-                console.log('Netlify function failed, falling back to direct API call...', error.message);
-                return await this.callGeminiDirectly(message);
-            }
-        } else {
-            // For local development, use direct API call
+        // Always try Netlify function first for production deployment
+        try {
+            return await this.callNetlifyFunction(message);
+        } catch (error) {
+            console.log('Netlify function failed, falling back to direct API call...', error.message);
+            // Only fallback to direct API if Netlify function fails
             return await this.callGeminiDirectly(message);
         }
     }
@@ -192,19 +180,21 @@ class ZionChatbot {
         const timeoutId = setTimeout(() => controller.abort(), this.requestTimeout);
         
         try {
-            const apiKey = 'AIzaSyAM1vn_fYcAeFSDdyV1SXyZShzfnR_RlS8';
-            const geminiUrl = `https://generativelanguage.googleapis.com/v1/models/gemini-1.0-pro:generateContent?key=${apiKey}`;
+            // Using the exact format from Google AI documentation
+            const API_KEY = 'AIzaSyAM1vn_fYcAeFSDdyV1SXyZShzfnR_RlS8';
+            const API_ENDPOINT = 'https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash-latest:generateContent';
             
-            const response = await fetch(geminiUrl, {
+            const response = await fetch(API_ENDPOINT, {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json',
+                    'x-goog-api-key': API_KEY
                 },
                 body: JSON.stringify({
-                    contents: [{
-                        parts: [{
-                            text: message
-                        }]
+                    contents: [{ 
+                        parts: [{ 
+                            text: message 
+                        }] 
                     }]
                 }),
                 signal: controller.signal
@@ -219,6 +209,7 @@ class ZionChatbot {
             }
             
             const data = await response.json();
+            console.log('API Response:', data);
             
             // Extract the AI's reply from the response
             if (data.candidates && 
@@ -411,19 +402,32 @@ const ZionUtils = {
     
     // Network status check
     async checkAPIStatus() {
-        const isLocal = window.location.hostname === 'localhost' || 
-                       window.location.hostname === '127.0.0.1' || 
-                       window.location.protocol === 'file:';
-        
-        if (isLocal) {
-            // Check direct Gemini API access
+        // Always check Netlify function for production deployment
+        try {
+            const response = await fetch('/.netlify/functions/getAIResponse', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ message: 'test' })
+            });
+            
+            return {
+                status: response.ok ? 'online' : 'error',
+                statusCode: response.status,
+                message: response.ok ? 'AI service is operational (Netlify function)' : 'AI service has issues',
+                mode: 'netlify'
+            };
+        } catch (error) {
+            // If Netlify function fails, check direct API as fallback
             try {
-                const apiKey = 'AIzaSyAM1vn_fYcAeFSDdyV1SXyZShzfnR_RlS8';
-                const geminiUrl = `https://generativelanguage.googleapis.com/v1/models/gemini-1.0-pro:generateContent?key=${apiKey}`;
+                const API_KEY = 'AIzaSyAM1vn_fYcAeFSDdyV1SXyZShzfnR_RlS8';
+                const API_ENDPOINT = 'https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash-latest:generateContent';
                 
-                const response = await fetch(geminiUrl, {
+                const response = await fetch(API_ENDPOINT, {
                     method: 'POST',
-                    headers: { 'Content-Type': 'application/json' },
+                    headers: { 
+                        'Content-Type': 'application/json',
+                        'x-goog-api-key': API_KEY
+                    },
                     body: JSON.stringify({
                         contents: [{
                             parts: [{
@@ -436,38 +440,15 @@ const ZionUtils = {
                 return {
                     status: response.ok ? 'online' : 'error',
                     statusCode: response.status,
-                    message: response.ok ? 'AI service is operational (direct connection)' : 'AI service has issues',
-                    mode: 'direct'
+                    message: response.ok ? 'AI service is operational (direct fallback)' : 'AI service has issues',
+                    mode: 'direct-fallback'
                 };
-            } catch (error) {
+            } catch (directError) {
                 return {
                     status: 'offline',
                     statusCode: 0,
                     message: 'Cannot reach AI service',
-                    mode: 'direct'
-                };
-            }
-        } else {
-            // Check Netlify function
-            try {
-                const response = await fetch('/.netlify/functions/getAIResponse', {
-                    method: 'POST',
-                    headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify({ message: 'test' })
-                });
-                
-                return {
-                    status: response.ok ? 'online' : 'error',
-                    statusCode: response.status,
-                    message: response.ok ? 'AI service is operational (Netlify function)' : 'AI service has issues',
-                    mode: 'netlify'
-                };
-            } catch (error) {
-                return {
-                    status: 'offline',
-                    statusCode: 0,
-                    message: 'Cannot reach AI service',
-                    mode: 'netlify'
+                    mode: 'offline'
                 };
             }
         }
