@@ -117,6 +117,19 @@ class ZionChatbot {
     }
     
     async callAI(message) {
+        // Check if we're running locally (fallback to direct API call)
+        const isLocal = window.location.hostname === 'localhost' || 
+                       window.location.hostname === '127.0.0.1' || 
+                       window.location.protocol === 'file:';
+        
+        if (isLocal) {
+            return await this.callGeminiDirectly(message);
+        } else {
+            return await this.callNetlifyFunction(message);
+        }
+    }
+    
+    async callNetlifyFunction(message) {
         const controller = new AbortController();
         const timeoutId = setTimeout(() => controller.abort(), this.requestTimeout);
         
@@ -146,6 +159,68 @@ class ZionChatbot {
             }
             
             return data.reply;
+            
+        } catch (error) {
+            clearTimeout(timeoutId);
+            
+            if (error.name === 'AbortError') {
+                throw new Error('Request timed out. Please try again.');
+            }
+            
+            if (error instanceof TypeError && error.message.includes('fetch')) {
+                // Fallback to direct API call if Netlify function fails
+                console.log('Netlify function unavailable, falling back to direct API call...');
+                return await this.callGeminiDirectly(message);
+            }
+            
+            throw error;
+        }
+    }
+    
+    async callGeminiDirectly(message) {
+        const controller = new AbortController();
+        const timeoutId = setTimeout(() => controller.abort(), this.requestTimeout);
+        
+        try {
+            const apiKey = 'AIzaSyAM1vn_fYcAeFSDdyV1SXyZShzfnR_RlS8';
+            const geminiUrl = `https://generativelanguage.googleapis.com/v1/models/gemini-1.0-pro:generateContent?key=${apiKey}`;
+            
+            const response = await fetch(geminiUrl, {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify({
+                    contents: [{
+                        parts: [{
+                            text: message
+                        }]
+                    }]
+                }),
+                signal: controller.signal
+            });
+            
+            clearTimeout(timeoutId);
+            
+            if (!response.ok) {
+                const errorText = await response.text();
+                console.error(`Gemini API error: ${response.status} - ${errorText}`);
+                throw new Error('AI service temporarily unavailable. Please try again later.');
+            }
+            
+            const data = await response.json();
+            
+            // Extract the AI's reply from the response
+            if (data.candidates && 
+                data.candidates.length > 0 && 
+                data.candidates[0].content && 
+                data.candidates[0].content.parts && 
+                data.candidates[0].content.parts.length > 0) {
+                
+                return data.candidates[0].content.parts[0].text;
+            }
+            
+            throw new Error('No response generated. Please try again.');
             
         } catch (error) {
             clearTimeout(timeoutId);
@@ -326,24 +401,65 @@ const ZionUtils = {
     
     // Network status check
     async checkAPIStatus() {
-        try {
-            const response = await fetch('/.netlify/functions/getAIResponse', {
-                method: 'POST',
-                headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify({ message: 'test' })
-            });
-            
-            return {
-                status: response.ok ? 'online' : 'error',
-                statusCode: response.status,
-                message: response.ok ? 'AI service is operational' : 'AI service has issues'
-            };
-        } catch (error) {
-            return {
-                status: 'offline',
-                statusCode: 0,
-                message: 'Cannot reach AI service'
-            };
+        const isLocal = window.location.hostname === 'localhost' || 
+                       window.location.hostname === '127.0.0.1' || 
+                       window.location.protocol === 'file:';
+        
+        if (isLocal) {
+            // Check direct Gemini API access
+            try {
+                const apiKey = 'AIzaSyAM1vn_fYcAeFSDdyV1SXyZShzfnR_RlS8';
+                const geminiUrl = `https://generativelanguage.googleapis.com/v1/models/gemini-1.0-pro:generateContent?key=${apiKey}`;
+                
+                const response = await fetch(geminiUrl, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({
+                        contents: [{
+                            parts: [{
+                                text: 'test'
+                            }]
+                        }]
+                    })
+                });
+                
+                return {
+                    status: response.ok ? 'online' : 'error',
+                    statusCode: response.status,
+                    message: response.ok ? 'AI service is operational (direct connection)' : 'AI service has issues',
+                    mode: 'direct'
+                };
+            } catch (error) {
+                return {
+                    status: 'offline',
+                    statusCode: 0,
+                    message: 'Cannot reach AI service',
+                    mode: 'direct'
+                };
+            }
+        } else {
+            // Check Netlify function
+            try {
+                const response = await fetch('/.netlify/functions/getAIResponse', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ message: 'test' })
+                });
+                
+                return {
+                    status: response.ok ? 'online' : 'error',
+                    statusCode: response.status,
+                    message: response.ok ? 'AI service is operational (Netlify function)' : 'AI service has issues',
+                    mode: 'netlify'
+                };
+            } catch (error) {
+                return {
+                    status: 'offline',
+                    statusCode: 0,
+                    message: 'Cannot reach AI service',
+                    mode: 'netlify'
+                };
+            }
         }
     }
 };
