@@ -2,20 +2,18 @@
   "name": "project-zion",
   "version": "1.0.0",
   "description": "Project Zion AI-powered cybersecurity assistance platform",
-  "main": "index.js",
+  "main": "index.html",
   "scripts": {
     "build": "echo 'No build step required'",
     "start": "echo 'Static site - no start command needed'",
-    "dev": "netlify dev",
-    "test": "node test-ai.js"
+    "dev": "vercel dev",
+    "deploy": "vercel --prod"
   },
-  "dependencies": {
-    "node-fetch": "^2.6.7"
-  },
+  "dependencies": {},
   "devDependencies": {
-    "dotenv": "^16.0.3",
-    "netlify-cli": "^23.8.1"
+    "vercel": "^32.0.0"
   },
   "author": "Project Zion Team",
-  "license": "MIT"
+  "license": "MIT",
+  "type": "module"
 }
