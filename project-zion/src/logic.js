@@ -15,7 +15,7 @@ class ZionChatbot {
         this.messageHistory = [];
         
         // Configuration
-        this.apiEndpoint = '/.netlify/functions/getAIResponse';
+        this.apiEndpoint = '/api/getAIResponse';
         this.maxMessageLength = 1000;
         this.requestTimeout = 30000; // 30 seconds
         
@@ -330,9 +330,9 @@ const ZionUtils = {
     
     // Network status check
     async checkAPIStatus() {
-        // Always check Netlify function for production deployment
+        // Check Vercel API function for production deployment
         try {
-            const response = await fetch('/.netlify/functions/getAIResponse', {
+            const response = await fetch('/api/getAIResponse', {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify({ message: 'test' })
@@ -341,44 +341,16 @@ const ZionUtils = {
             return {
                 status: response.ok ? 'online' : 'error',
                 statusCode: response.status,
-                message: response.ok ? 'AI service is operational (Netlify function)' : 'AI service has issues',
-                mode: 'netlify'
+                message: response.ok ? 'AI service is operational (Vercel API)' : 'AI service has issues',
+                mode: 'vercel'
             };
         } catch (error) {
-            // If Netlify function fails, check direct API as fallback
-            try {
-                const API_KEY = 'AIzaSyAM1vn_fYcAeFSDdyV1SXyZShzfnR_RlS8';
-                const API_ENDPOINT = 'https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash-latest:generateContent';
-                
-                const response = await fetch(API_ENDPOINT, {
-                    method: 'POST',
-                    headers: { 
-                        'Content-Type': 'application/json',
-                        'x-goog-api-key': API_KEY
-                    },
-                    body: JSON.stringify({
-                        contents: [{
-                            parts: [{
-                                text: 'test'
-                            }]
-                        }]
-                    })
-                });
-                
-                return {
-                    status: response.ok ? 'online' : 'error',
-                    statusCode: response.status,
-                    message: response.ok ? 'AI service is operational (direct fallback)' : 'AI service has issues',
-                    mode: 'direct-fallback'
-                };
-            } catch (directError) {
-                return {
-                    status: 'offline',
-                    statusCode: 0,
-                    message: 'Cannot reach AI service',
-                    mode: 'offline'
-                };
-            }
+            return {
+                status: 'offline',
+                statusCode: 0,
+                message: 'Cannot reach AI service',
+                mode: 'offline'
+            };
         }
     }
 };

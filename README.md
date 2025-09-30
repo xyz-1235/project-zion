@@ -1,4 +1,8 @@
-# Project Zion
+# Project## 🌐 Live Demo
+
+**[Visit Project Zion →](https://project-zion.vercel.app/)**
+
+Experience the live application deployed on Vercel. No installation required - just click and start using our digital sanctuary.
 
 [![License: MIT](https://img.shields.io/badge/License-MIT-blue.svg)](https://opensource.org/licenses/MIT)
 [![Project Status: Prototype](https://img.shields.io/badge/status-Prototype-blue.svg)](https://github.com/CreeperBoy75/project-zion/)
@@ -48,10 +52,10 @@ Ultimately, Project Zion is a fortress of support, designed to help users find t
    npm run dev
    ```
 
-5. **Deploy to Netlify:**
-   - Drag the `project-zion-app` folder to Netlify
-   - Set `COHERE_API_KEY` environment variable
-   - Deploy!
+5. **Deploy to Vercel:**
+   - Connect your GitHub repository to Vercel
+   - Set `COHERE_API_KEY` environment variable in Vercel dashboard
+   - Deploy automatically on push!
 
 ## 🖼️ Screenshot / Demo
 
@@ -88,8 +92,31 @@ Our project uses a modern, API-first architecture to ensure security and scalabi
 To run the prototype locally:
 
 1. Clone this repository to your local machine.
-2. Navigate to the `project-zion-app` folder.
+2. Navigate to the `project-zion` folder.
 3. Follow the Quick Start instructions above.
+
+### 🔧 Vercel Deployment
+
+1. **Push to GitHub:**
+   ```bash
+   git add .
+   git commit -m "Migrate to Vercel"
+   git push origin main
+   ```
+
+2. **Connect to Vercel:**
+   - Go to [vercel.com](https://vercel.com)
+   - Sign in with GitHub
+   - Import your `project-zion` repository
+   - Set root directory to `project-zion`
+
+3. **Environment Variables:**
+   - In Vercel dashboard → Settings → Environment Variables
+   - Add: `COHERE_API_KEY` with your Cohere API key
+
+4. **Deploy:**
+   - Click "Deploy" - Vercel will automatically deploy
+   - Future commits to main branch will auto-deploy
 
 ## 🌱 Future Development
 
