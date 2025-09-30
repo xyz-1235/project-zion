@@ -4,15 +4,15 @@ npm-debug.log*
 yarn-debug.log*
 yarn-error.log*
 
-# Environment variables
+# Environment variables - NEVER COMMIT THESE
 .env
 .env.local
 .env.development.local
 .env.test.local
 .env.production.local
 
-# Netlify
-.netlify/
+# Vercel
+.vercel
 
 # Operating System Files
 .DS_Store
