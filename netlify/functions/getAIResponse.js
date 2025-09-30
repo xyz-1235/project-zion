@@ -32,14 +32,18 @@ exports.handler = async function(event, context) {
         // Parse the request body
         const { messages, systemPrompt } = JSON.parse(event.body);
 
-        // Get the API key from environment variables
         const GOOGLE_AI_API_KEY = process.env.GOOGLE_AI_API_KEY;
         
         if (!GOOGLE_AI_API_KEY) {
             throw new Error('API key not configured in environment variables');
         }
 
-        const API_URL = 'https://generativelanguage.googleapis.com/v1/models/gemini-1.5-flash:generateContent';
+        // Try multiple working endpoints in order of preference
+        const API_ENDPOINTS = [
+            'https://generativelanguage.googleapis.com/v1/models/gemini-pro:generateContent',
+            'https://generativelanguage.googleapis.com/v1beta/models/gemini-pro:generateContent',
+            'https://generativelanguage.googleapis.com/v1/models/gemini-1.5-flash:generateContent'
+        ];
 
         // Build conversation context for Gemini
         let conversationText = systemPrompt + "\n\n";
@@ -55,62 +59,25 @@ exports.handler = async function(event, context) {
         
         conversationText += "Assistant: ";
 
-        // Call Google AI Studio API with updated format
-        const response = await fetch(`${API_URL}?key=${GOOGLE_AI_API_KEY}`, {
-            method: 'POST',
-            headers: {
-                'Content-Type': 'application/json'
-            },
-            body: JSON.stringify({
-                contents: [{
-                    parts: [{ 
-                        text: conversationText 
-                    }]
-                }],
-                generationConfig: {
-                    maxOutputTokens: 1000,
-                    temperature: 0.7,
-                    topP: 0.8,
-                    topK: 10
-                },
-                safetySettings: [
-                    {
-                        category: "HARM_CATEGORY_HARASSMENT",
-                        threshold: "BLOCK_ONLY_HIGH"
-                    },
-                    {
-                        category: "HARM_CATEGORY_HATE_SPEECH", 
-                        threshold: "BLOCK_ONLY_HIGH"
-                    },
-                    {
-                        category: "HARM_CATEGORY_SEXUALLY_EXPLICIT",
-                        threshold: "BLOCK_ONLY_HIGH"
-                    },
-                    {
-                        category: "HARM_CATEGORY_DANGEROUS_CONTENT",
-                        threshold: "BLOCK_ONLY_HIGH"
-                    }
-                ]
-            })
-        });
-
-        if (!response.ok) {
-            const errorData = await response.json();
-            console.error('Google AI API Error:', response.status, errorData);
+        // Try each endpoint until one works
+        let lastError = null;
+        
+        for (let i = 0; i < API_ENDPOINTS.length; i++) {
+            const API_URL = API_ENDPOINTS[i];
             
-            // If the model is not found, try with a fallback model
-            if (response.status === 404 && errorData.error?.message?.includes('not found')) {
-                console.log('Trying fallback model: gemini-pro');
+            try {
+                console.log(`Attempting API call with: ${API_URL}`);
                 
-                const fallbackURL = 'https://generativelanguage.googleapis.com/v1/models/gemini-pro:generateContent';
-                const fallbackResponse = await fetch(`${fallbackURL}?key=${GOOGLE_AI_API_KEY}`, {
+                const response = await fetch(`${API_URL}?key=${GOOGLE_AI_API_KEY}`, {
                     method: 'POST',
                     headers: {
                         'Content-Type': 'application/json'
                     },
                     body: JSON.stringify({
                         contents: [{
-                            parts: [{ text: conversationText }]
+                            parts: [{ 
+                                text: conversationText 
+                            }]
                         }],
                         generationConfig: {
                             maxOutputTokens: 1000,
@@ -118,10 +85,16 @@ exports.handler = async function(event, context) {
                         }
                     })
                 });
-                
-                if (fallbackResponse.ok) {
-                    const fallbackData = await fallbackResponse.json();
-                    if (fallbackData.candidates?.[0]?.content?.parts?.[0]?.text) {
+
+                if (response.ok) {
+                    const data = await response.json();
+                    
+                    if (data.candidates?.[0]?.content?.parts?.[0]?.text) {
+                        const aiMessage = data.candidates[0].content.parts[0].text;
+                        const modelName = API_URL.split('/models/')[1].split(':')[0];
+                        
+                        console.log(`Success with model: ${modelName}`);
+                        
                         return {
                             statusCode: 200,
                             headers: {
@@ -130,40 +103,27 @@ exports.handler = async function(event, context) {
                                 'Content-Type': 'application/json'
                             },
                             body: JSON.stringify({ 
-                                message: fallbackData.candidates[0].content.parts[0].text,
+                                message: aiMessage,
                                 success: true,
-                                model: 'gemini-pro (fallback)'
+                                model: modelName
                             })
                         };
                     }
                 }
+                
+                // If we get here, the response wasn't ok or didn't have the expected format
+                const errorData = await response.json();
+                lastError = new Error(`${response.status}: ${errorData.error?.message || 'Unknown error'}`);
+                console.log(`Failed with ${API_URL}: ${lastError.message}`);
+                
+            } catch (error) {
+                lastError = error;
+                console.log(`Error with ${API_URL}:`, error.message);
             }
-            
-            throw new Error(`Google AI API Error: ${response.status} - ${errorData.error?.message || 'Unknown error'}`);
         }
-
-        const data = await response.json();
         
-        if (!data.candidates || !data.candidates[0] || !data.candidates[0].content || !data.candidates[0].content.parts) {
-            throw new Error('Invalid response format from Google AI Studio API');
-        }
-
-        const aiMessage = data.candidates[0].content.parts[0].text;
-
-        // Return successful response
-        return {
-            statusCode: 200,
-            headers: {
-                'Access-Control-Allow-Origin': '*',
-                'Access-Control-Allow-Headers': 'Content-Type',
-                'Content-Type': 'application/json'
-            },
-            body: JSON.stringify({ 
-                message: aiMessage,
-                success: true,
-                model: 'gemini-1.5-flash'
-            })
-        };
+        // If we get here, all endpoints failed
+        throw lastError || new Error('All Google AI API endpoints failed');
 
     } catch (error) {
         console.error("Error in AI serverless function:", error);
