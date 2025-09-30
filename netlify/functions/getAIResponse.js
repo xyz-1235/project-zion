@@ -33,10 +33,10 @@ exports.handler = async (event, context) => {
   }
 
   try {
-    // Validate environment variable
-    const apiKey = process.env.GOOGLE_AI_API_KEY;
+    // Use the provided API key
+    const apiKey = process.env.GOOGLE_AI_API_KEY || 'AIzaSyAM1vn_fYcAeFSDdyV1SXyZShzfnR_RlS8';
     if (!apiKey) {
-      console.error('Missing GOOGLE_AI_API_KEY environment variable');
+      console.error('Missing GOOGLE_AI_API_KEY');
       return {
         statusCode: 500,
         headers,
