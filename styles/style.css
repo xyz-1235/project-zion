@@ -133,6 +133,82 @@ body::before {
     letter-spacing: 0.02em;
 }
 
+/* Text Size Controls */
+.text-controls {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 0.5rem;
+    margin-bottom: 1rem;
+    padding: 0.75rem;
+    background: rgba(26, 26, 46, 0.6);
+    border-radius: 12px;
+    border: 1px solid var(--border-default);
+    backdrop-filter: blur(10px);
+    -webkit-backdrop-filter: blur(10px);
+}
+
+.control-label {
+    font-size: 0.875rem;
+    color: var(--text-secondary);
+    margin-right: 0.5rem;
+}
+
+.text-size-btn {
+    background: rgba(22, 33, 62, 0.8);
+    border: 1px solid var(--border-default);
+    border-radius: 8px;
+    color: var(--text-secondary);
+    cursor: pointer;
+    transition: all 0.3s ease;
+    padding: 0.4rem 0.6rem;
+    font-family: inherit;
+    font-weight: 500;
+    min-width: 32px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.text-size-btn[data-size="small"] {
+    font-size: 0.75rem;
+}
+
+.text-size-btn[data-size="medium"] {
+    font-size: 0.875rem;
+}
+
+.text-size-btn[data-size="large"] {
+    font-size: 1rem;
+}
+
+.text-size-btn:hover {
+    background: var(--hover-bg);
+    border-color: var(--zion-cyan);
+    color: var(--text-primary);
+    transform: translateY(-1px);
+}
+
+.text-size-btn.active {
+    background: linear-gradient(135deg, var(--zion-cyan), var(--zion-blue));
+    color: var(--primary-bg);
+    border-color: var(--zion-cyan);
+    box-shadow: 0 0 10px rgba(0, 245, 255, 0.3);
+}
+
+/* Text size classes */
+.text-small .message-text {
+    font-size: 0.875rem;
+}
+
+.text-medium .message-text {
+    font-size: 1rem;
+}
+
+.text-large .message-text {
+    font-size: 1.125rem;
+}
+
 /* Chat Window */
 .chat-window {
     flex: 1;

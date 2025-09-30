@@ -30,8 +30,41 @@ class ZionChatbot {
         }
         
         this.initializeEventListeners();
+        this.initializeTextSizeControls();
         this.addWelcomeMessage();
         this.userInput.focus();
+    }
+    
+    initializeTextSizeControls() {
+        const textSizeButtons = document.querySelectorAll('.text-size-btn');
+        const chatWindow = this.chatWindow;
+        
+        textSizeButtons.forEach(button => {
+            button.addEventListener('click', () => {
+                // Remove active class from all buttons
+                textSizeButtons.forEach(btn => btn.classList.remove('active'));
+                
+                // Add active class to clicked button
+                button.classList.add('active');
+                
+                // Remove existing text size classes
+                chatWindow.classList.remove('text-small', 'text-medium', 'text-large');
+                
+                // Add new text size class
+                const size = button.dataset.size;
+                chatWindow.classList.add(`text-${size}`);
+                
+                // Store preference in localStorage
+                localStorage.setItem('zion-text-size', size);
+            });
+        });
+        
+        // Load saved text size preference
+        const savedSize = localStorage.getItem('zion-text-size') || 'medium';
+        const savedButton = document.querySelector(`[data-size="${savedSize}"]`);
+        if (savedButton) {
+            savedButton.click();
+        }
     }
     
     initializeEventListeners() {
@@ -61,7 +94,7 @@ class ZionChatbot {
     }
     
     addWelcomeMessage() {
-        const welcomeMessage = "Hello! I'm Zion, your AI-powered digital security assistant. I'm here to help you with cybersecurity concerns, privacy questions, and support if you've been a victim of cybercrime. How can I assist you today?";
+        const welcomeMessage = "Welcome to Project Zion. I'm here to help with cybersecurity concerns and digital safety. How can I assist you?";
         this.displayMessage(welcomeMessage, 'bot');
     }
     

@@ -7,8 +7,10 @@ class AutoHideNavbar {
     constructor() {
         this.navbar = null;
         this.lastScrollTop = 0;
-        this.scrollThreshold = 10;
+        this.scrollThreshold = 5; // Reduced for more responsiveness
         this.isHidden = false;
+        this.scrollVelocity = 0;
+        this.lastScrollTime = 0;
         
         this.init();
     }
@@ -61,9 +63,23 @@ class AutoHideNavbar {
     
     handleScroll() {
         const scrollTop = window.pageYOffset || document.documentElement.scrollTop;
+        const currentTime = Date.now();
         
-        // Ignore small scroll movements
+        // Calculate scroll velocity
+        const timeDiff = currentTime - this.lastScrollTime;
+        const scrollDiff = Math.abs(scrollTop - this.lastScrollTop);
+        this.scrollVelocity = timeDiff > 0 ? scrollDiff / timeDiff : 0;
+        
+        // Adjust transition speed based on scroll velocity
+        const baseTransition = 0.3;
+        const velocityFactor = Math.min(this.scrollVelocity * 0.1, 0.5);
+        const transitionSpeed = Math.max(baseTransition - velocityFactor, 0.1);
+        
+        this.navbar.style.transition = `transform ${transitionSpeed}s ease, opacity ${transitionSpeed}s ease`;
+        
+        // Ignore very small scroll movements
         if (Math.abs(scrollTop - this.lastScrollTop) < this.scrollThreshold) {
+            this.lastScrollTime = currentTime;
             return;
         }
         
@@ -71,8 +87,8 @@ class AutoHideNavbar {
         if (scrollTop <= this.scrollThreshold) {
             this.showNavbar();
         }
-        // Scrolling down
-        else if (scrollTop > this.lastScrollTop && !this.isHidden) {
+        // Scrolling down with some velocity
+        else if (scrollTop > this.lastScrollTop && !this.isHidden && this.scrollVelocity > 0.1) {
             this.hideNavbar();
         }
         // Scrolling up
@@ -81,6 +97,7 @@ class AutoHideNavbar {
         }
         
         this.lastScrollTop = scrollTop;
+        this.lastScrollTime = currentTime;
     }
     
     hideNavbar() {
