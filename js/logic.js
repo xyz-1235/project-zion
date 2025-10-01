@@ -1,408 +1,136 @@
 /**
- * Project Zion - AI-Powered Chatbot Application Logic
- * Integrates with Cohere AI through secure Netlify Functions
+ * Project Zion - Simple Chat Logic
  */
 
-class ZionChatbot {
-    constructor() {
-        // DOM elements
-        this.chatWindow = document.getElementById('chat-window');
-        this.userInput = document.getElementById('user-input');
-        this.sendButton = document.getElementById('send-btn');
-        
-        // Application state
-        this.isProcessing = false;
-        this.messageHistory = [];
-        
-        // Configuration
-        this.apiEndpoint = '/api/getAIResponse';
-        this.maxMessageLength = 1000;
-        this.requestTimeout = 30000; // 30 seconds
-        
-        // Initialize the application
-        this.init();
-    }
-    
-    init() {
-        if (!this.chatWindow || !this.userInput || !this.sendButton) {
-            console.error('ZionChatbot: Required DOM elements not found');
-            return;
-        }
-        
-        this.initializeEventListeners();
-        this.initializeTextSizeControls();
-        this.addWelcomeMessage();
-        this.userInput.focus();
-    }
-    
-    initializeTextSizeControls() {
-        const textSizeButtons = document.querySelectorAll('.text-size-btn');
-        const chatWindow = this.chatWindow;
-        
-        textSizeButtons.forEach(button => {
-            button.addEventListener('click', () => {
-                // Remove active class from all buttons
-                textSizeButtons.forEach(btn => btn.classList.remove('active'));
-                
-                // Add active class to clicked button
-                button.classList.add('active');
-                
-                // Remove existing text size classes
-                chatWindow.classList.remove('text-small', 'text-medium', 'text-large');
-                
-                // Add new text size class
-                const size = button.dataset.size;
-                chatWindow.classList.add(`text-${size}`);
-                
-                // Store preference in localStorage
-                localStorage.setItem('zion-text-size', size);
-            });
-        });
-        
-        // Load saved text size preference
-        const savedSize = localStorage.getItem('zion-text-size') || 'medium';
-        const savedButton = document.querySelector(`[data-size="${savedSize}"]`);
-        if (savedButton) {
-            savedButton.click();
-        }
-    }
-    
-    initializeEventListeners() {
-        // Send button click handler
-        this.sendButton.addEventListener('click', (e) => {
-            e.preventDefault();
-            this.handleUserMessage();
-        });
-        
-        // Enter key handler for input field (Shift+Enter for new line)
-        this.userInput.addEventListener('keydown', (e) => {
-            if (e.key === 'Enter' && !e.shiftKey) {
-                e.preventDefault();
-                this.handleUserMessage();
-            }
-        });
-        
-        // Auto-resize textarea
-        this.userInput.addEventListener('input', () => {
-            this.autoResizeTextarea();
-        });
-    }
-    
-    autoResizeTextarea() {
-        this.userInput.style.height = 'auto';
-        this.userInput.style.height = Math.min(this.userInput.scrollHeight, 150) + 'px';
-    }
-    
-    addWelcomeMessage() {
-        const welcomeMessage = "Hi, I'm Zion. You're safe here. How can I help?";
-        this.displayMessage(welcomeMessage, 'bot');
-    }
-    
-    async handleUserMessage() {
-        const message = this.userInput.value.trim();
-        
-        // Validate input
-        if (!message || this.isProcessing) {
-            return;
-        }
-        
-        if (message.length > this.maxMessageLength) {
-            this.displayMessage(`Message too long. Maximum ${this.maxMessageLength} characters allowed.`, 'error');
-            return;
-        }
-        
-        // Display user message
-        this.displayMessage(message, 'user');
-        
-        // Store in history
-        this.messageHistory.push({ type: 'user', content: message, timestamp: new Date() });
-        
-        // Clear input and disable form
-        this.userInput.value = '';
-        this.userInput.style.height = 'auto';
-        this.setProcessingState(true);
-        
-        // Show typing indicator
-        const typingIndicator = this.showTypingIndicator();
-        
-        try {
-            // Get AI response
-            const response = await this.callAI(message);
-            
-            // Remove typing indicator
-            this.removeTypingIndicator(typingIndicator);
-            
-            // Display AI response
-            this.displayMessage(response, 'bot');
-            
-            // Store in history
-            this.messageHistory.push({ type: 'bot', content: response, timestamp: new Date() });
-            
-        } catch (error) {
-            console.error('Error getting AI response:', error);
-            this.removeTypingIndicator(typingIndicator);
-            this.displayMessage(error.message || 'I apologize, but I\'m experiencing some technical difficulties. Please try again in a moment.', 'error');
-        } finally {
-            // Re-enable form and focus input
-            this.setProcessingState(false);
-            this.userInput.focus();
-        }
-    }
-    
-    async callAI(message) {
-        return await this.callNetlifyFunction(message);
-    }
-    
-    async callNetlifyFunction(message) {
-        const controller = new AbortController();
-        const timeoutId = setTimeout(() => controller.abort(), this.requestTimeout);
-        
-        try {
-            const response = await fetch(this.apiEndpoint, {
-                method: 'POST',
-                headers: {
-                    'Content-Type': 'application/json',
-                },
-                body: JSON.stringify({
-                    message: message
-                }),
-                signal: controller.signal
-            });
-            
-            clearTimeout(timeoutId);
-            
-            if (!response.ok) {
-                const errorData = await response.json().catch(() => ({}));
-                throw new Error(errorData.error || `Server error: ${response.status}`);
-            }
-            
-            const data = await response.json();
-            
-            if (!data.reply) {
-                throw new Error('Invalid response format from server.');
-            }
-            
-            return data.reply;
-            
-        } catch (error) {
-            clearTimeout(timeoutId);
-            
-            if (error.name === 'AbortError') {
-                throw new Error('Request timed out. Please try again.');
-            }
-            
-            if (error instanceof TypeError && error.message.includes('fetch')) {
-                throw new Error('Unable to reach the AI service. Check your connection or try again soon.');
-            }
+const chatWindow = document.getElementById('chat-window');
+const userInput = document.getElementById('user-input');
+const sendButton = document.getElementById('send-btn');
 
-            throw new Error(error.message || 'The AI service encountered an unexpected error.');
+let isProcessing = false;
+
+// Initialize
+if (chatWindow && userInput && sendButton) {
+    initializeChat();
+}
+
+function initializeChat() {
+    // Event listeners
+    sendButton.addEventListener('click', handleUserMessage);
+    userInput.addEventListener('keydown', (e) => {
+        if (e.key === 'Enter' && !e.shiftKey) {
+            e.preventDefault();
+            handleUserMessage();
         }
-    }
+    });
     
-    displayMessage(text, sender) {
-        const messageDiv = document.createElement('div');
-        messageDiv.className = `message ${sender}-message`;
-        let avatar;
-        switch(sender) {
-            case 'bot':
-                avatar = 'Z';
-                break;
-            case 'user':
-                avatar = 'U';
-                break;
-            case 'error':
-                avatar = '⚠';
-                break;
-            default:
-                avatar = '?';
-        }
-        const timestamp = new Date().toLocaleTimeString();
-        messageDiv.innerHTML = `
-            <div class="message-content">
-                <div class="message-avatar">${avatar}</div>
-                <div class="message-text">${this.formatMessage(text, sender)}
-                    <div class="message-timestamp" style="font-size:0.75rem;opacity:0.7;margin-top:0.3em;">${timestamp}</div>
-                </div>
-            </div>
-        `;
-        this.chatWindow.appendChild(messageDiv);
-        this.scrollToBottom();
-    }
+    // Text size controls
+    document.querySelectorAll('.text-size-btn').forEach(button => {
+        button.addEventListener('click', () => {
+            document.querySelectorAll('.text-size-btn').forEach(btn => btn.classList.remove('active'));
+            button.classList.add('active');
+            chatWindow.className = chatWindow.className.replace(/text-(small|medium|large)/g, '');
+            chatWindow.classList.add(`text-${button.dataset.size}`);
+        });
+    });
     
-    formatMessage(text, sender) {
-        // Only format markdown for bot messages
-        if (sender === 'bot') {
-            let formatted = text;
-            // Bold: **text** or __text__
-            formatted = formatted.replace(/\*\*(.*?)\*\*/g, '<strong>$1</strong>');
-            formatted = formatted.replace(/__(.*?)__/g, '<strong>$1</strong>');
-            // Italic: *text* or _text_
-            formatted = formatted.replace(/\*(.*?)\*/g, '<em>$1</em>');
-            formatted = formatted.replace(/_(.*?)_/g, '<em>$1</em>');
-            // Lists: lines starting with - or *
-            formatted = formatted.replace(/(^|\n)[\-\*] (.*?)(?=\n|$)/g, '$1<li>$2</li>');
-            // Numbered lists: lines starting with 1. 2. etc.
-            formatted = formatted.replace(/(^|\n)\d+\. (.*?)(?=\n|$)/g, '$1<li>$2</li>');
-            // Wrap lists in <ul>
-            if (formatted.includes('<li>')) {
-                formatted = '<ul>' + formatted.replace(/(<li>.*?<\/li>)/gs, '$1') + '</ul>';
-            }
-            // Convert line breaks to <br>
-            formatted = formatted.replace(/\n/g, '<br>');
-            return formatted;
-        } else {
-            // Escape HTML for user messages
-            const div = document.createElement('div');
-            div.textContent = text;
-            return div.innerHTML.replace(/\n/g, '<br>');
-        }
-    }
+    // Welcome message
+    displayMessage("Hi, I'm Zion. You're safe here. How can I help?", 'bot');
+    userInput.focus();
+}
+
+async function handleUserMessage() {
+    const message = userInput.value.trim();
     
-    showTypingIndicator() {
-        const typingDiv = document.createElement('div');
-        typingDiv.className = 'message bot-message typing-indicator';
-        typingDiv.innerHTML = `
-            <div class="message-content">
-                <div class="message-avatar">Z</div>
-                <div class="message-text">
-                    <div class="typing-dots">
-                        <span></span>
-                        <span></span>
-                        <span></span>
-                    </div>
-                    <span class="typing-text">Zion is thinking...</span>
-                </div>
-            </div>
-        `;
+    if (!message || isProcessing) return;
+    
+    displayMessage(message, 'user');
+    userInput.value = '';
+    setProcessingState(true);
+    
+    const typingIndicator = showTypingIndicator();
+    
+    try {
+        const response = await fetch('/api/getAIResponse', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ message })
+        });
         
-        this.chatWindow.appendChild(typingDiv);
-        this.scrollToBottom();
+        const data = await response.json();
+        removeTypingIndicator(typingIndicator);
+        displayMessage(data.reply || 'Sorry, I encountered an error.', 'bot');
         
-        return typingDiv;
-    }
-    
-    removeTypingIndicator(typingIndicator) {
-        if (typingIndicator && typingIndicator.parentNode) {
-            typingIndicator.parentNode.removeChild(typingIndicator);
-        }
-    }
-    
-    setProcessingState(isProcessing) {
-        this.isProcessing = isProcessing;
-        this.sendButton.disabled = isProcessing;
-        this.userInput.disabled = isProcessing;
-        
-        if (isProcessing) {
-            this.sendButton.textContent = 'Sending...';
-            this.sendButton.classList.add('processing');
-        } else {
-            this.sendButton.textContent = 'Send';
-            this.sendButton.classList.remove('processing');
-        }
-    }
-    
-    scrollToBottom() {
-        this.chatWindow.scrollTop = this.chatWindow.scrollHeight;
-    }
-    
-    // Utility methods
-    clearChat() {
-        this.chatWindow.innerHTML = '';
-        this.messageHistory = [];
-        this.addWelcomeMessage();
-    }
-    
-    getChatHistory() {
-        return [...this.messageHistory];
-    }
-    
-    exportChatHistory() {
-        const history = this.getChatHistory();
-        const exportData = {
-            timestamp: new Date().toISOString(),
-            messages: history,
-            sessionId: this.getSessionId()
-        };
-        
-        const blob = new Blob([JSON.stringify(exportData, null, 2)], { type: 'application/json' });
-        const url = URL.createObjectURL(blob);
-        
-        const a = document.createElement('a');
-        a.href = url;
-        a.download = `zion-chat-history-${new Date().toISOString().split('T')[0]}.json`;
-        document.body.appendChild(a);
-        a.click();
-        document.body.removeChild(a);
-        
-        URL.revokeObjectURL(url);
-    }
-    
-    getSessionId() {
-        let sessionId = sessionStorage.getItem('zion-session-id');
-        if (!sessionId) {
-            sessionId = 'session-' + Date.now() + '-' + Math.random().toString(36).substr(2, 9);
-            sessionStorage.setItem('zion-session-id', sessionId);
-        }
-        return sessionId;
+    } catch (error) {
+        removeTypingIndicator(typingIndicator);
+        displayMessage('Sorry, I\'m having technical difficulties. Please try again.', 'bot');
+    } finally {
+        setProcessingState(false);
+        userInput.focus();
     }
 }
 
-// Initialize the chatbot when the DOM is fully loaded
-document.addEventListener('DOMContentLoaded', () => {
-    window.zionChatbot = new ZionChatbot();
-});
+function displayMessage(text, sender) {
+    const messageDiv = document.createElement('div');
+    messageDiv.className = `message ${sender}-message`;
+    const avatar = sender === 'bot' ? 'Z' : 'U';
+    const timestamp = new Date().toLocaleTimeString();
+    
+    messageDiv.innerHTML = `
+        <div class="message-content">
+            <div class="message-avatar">${avatar}</div>
+            <div class="message-text">${formatMessage(text, sender)}
+                <div class="message-timestamp">${timestamp}</div>
+            </div>
+        </div>
+    `;
+    
+    chatWindow.appendChild(messageDiv);
+    chatWindow.scrollTop = chatWindow.scrollHeight;
+}
 
-// Additional utility functions and API helpers
-const ZionUtils = {
-    // Session management
-    getSessionId() {
-        return window.zionChatbot ? window.zionChatbot.getSessionId() : null;
-    },
-    
-    // Chat management
-    clearChat() {
-        if (window.zionChatbot) {
-            window.zionChatbot.clearChat();
-        }
-    },
-    
-    exportHistory() {
-        if (window.zionChatbot) {
-            window.zionChatbot.exportChatHistory();
-        }
-    },
-    
-    // Debug utilities
-    getHistory() {
-        return window.zionChatbot ? window.zionChatbot.getChatHistory() : [];
-    },
-    
-    // Network status check
-    async checkAPIStatus() {
-        // Check Vercel API function for production deployment
-        try {
-            const response = await fetch('/api/getAIResponse', {
-                method: 'POST',
-                headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify({ message: 'test' })
-            });
-            
-            return {
-                status: response.ok ? 'online' : 'error',
-                statusCode: response.status,
-                message: response.ok ? 'AI service is operational (Vercel API)' : 'AI service has issues',
-                mode: 'vercel'
-            };
-        } catch (error) {
-            return {
-                status: 'offline',
-                statusCode: 0,
-                message: 'Cannot reach AI service',
-                mode: 'offline'
-            };
-        }
+function formatMessage(text, sender) {
+    if (sender === 'bot') {
+        // Simple markdown formatting
+        let formatted = text
+            .replace(/\*\*(.*?)\*\*/g, '<strong>$1</strong>')
+            .replace(/\*(.*?)\*/g, '<em>$1</em>')
+            .replace(/\n/g, '<br>');
+        return formatted;
+    } else {
+        // Escape HTML for user messages
+        return text.replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/\n/g, '<br>');
     }
-};
+}
 
-// Make utilities available globally
-window.ZionUtils = ZionUtils;
+function showTypingIndicator() {
+    const typingDiv = document.createElement('div');
+    typingDiv.className = 'message bot-message typing-indicator';
+    typingDiv.innerHTML = `
+        <div class="message-content">
+            <div class="message-avatar">Z</div>
+            <div class="message-text">
+                <div class="typing-dots">
+                    <span></span>
+                    <span></span>
+                    <span></span>
+                </div>
+            </div>
+        </div>
+    `;
+    
+    chatWindow.appendChild(typingDiv);
+    chatWindow.scrollTop = chatWindow.scrollHeight;
+    return typingDiv;
+}
+
+function removeTypingIndicator(indicator) {
+    if (indicator && indicator.parentNode) {
+        indicator.parentNode.removeChild(indicator);
+    }
+}
+
+function setProcessingState(processing) {
+    isProcessing = processing;
+    sendButton.disabled = processing;
+    sendButton.textContent = processing ? 'Sending...' : 'Send';
+}

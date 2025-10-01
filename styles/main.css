@@ -1,13 +1,6 @@
-.message-timestamp {
-    font-size: 0.75rem;
-    color: #b3b3b3;
-    opacity: 0.7;
-    margin: 0.3em 0 0 0;
-    display: block;
-    text-align: left;
-}
-/* Project Zion - Digital Sanctuary Theme */
+/* Project Zion - Main Stylesheet */
 /* Cyberpunk aesthetic meets calm, supportive environment */
+/* Unified styling for chat interface and informational pages */
 
 @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600&family=JetBrains+Mono:wght@400;500&display=swap');
 
@@ -41,6 +34,7 @@
     --shadow-soft: 0 4px 15px rgba(0, 0, 0, 0.3);
 }
 
+/* Global Reset and Base Styles */
 * {
     margin: 0;
     padding: 0;
@@ -54,8 +48,8 @@ body {
     min-height: 100vh;
     overflow-x: hidden;
     position: relative;
+    line-height: 1.6;
 }
-
 
 /* Ambient background effect */
 body::before {
@@ -73,6 +67,104 @@ body::before {
     z-index: -1;
 }
 
+/* ========== HEADER AND NAVIGATION ========== */
+
+/* Site Header */
+.site-header {
+    background: var(--tertiary-bg);
+    border-bottom: 1px solid var(--border-default);
+    box-shadow: var(--shadow-soft);
+    backdrop-filter: blur(10px);
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    z-index: 100;
+    transition: transform 0.3s ease, opacity 0.3s ease;
+    transform: translateY(0);
+    opacity: 1;
+    max-width: 1200px;
+    margin: 0 auto;
+    padding: 1rem 2rem;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.site-title {
+    font-size: 1.75rem;
+    font-weight: 600;
+    background: linear-gradient(135deg, var(--zion-cyan), var(--zion-purple));
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+    text-decoration: none;
+    letter-spacing: -0.02em;
+}
+
+.site-title:hover {
+    text-shadow: var(--glow-cyan);
+}
+
+.main-nav ul {
+    display: flex;
+    list-style: none;
+    gap: 2rem;
+    align-items: center;
+}
+
+.main-nav a {
+    color: var(--text-secondary);
+    text-decoration: none;
+    font-weight: 400;
+    padding: 0.5rem 1rem;
+    border-radius: 8px;
+    transition: all 0.2s ease;
+    position: relative;
+}
+
+.main-nav a:hover {
+    color: var(--text-primary);
+    background: var(--hover-bg);
+    transform: translateY(-2px);
+}
+
+.main-nav a.active {
+    color: var(--zion-cyan);
+    background: var(--hover-bg);
+    border: 1px solid var(--border-focus);
+    box-shadow: var(--glow-cyan);
+}
+
+.main-nav a::after {
+    content: '';
+    position: absolute;
+    bottom: -2px;
+    left: 50%;
+    transform: translateX(-50%);
+    width: 0;
+    height: 2px;
+    background: var(--zion-cyan);
+    transition: width 0.2s ease;
+}
+
+.main-nav a:hover::after {
+    width: 80%;
+}
+
+/* ========== LAYOUT CONTAINERS ========== */
+
+/* Main content area for info pages */
+.main-content {
+    flex: 1;
+    padding: 0 2rem;
+    display: flex;
+    gap: 2rem;
+    max-width: 1400px;
+    margin: 0 auto;
+}
+
+/* Container for chat page */
 .container {
     max-width: 900px;
     margin: 0 auto;
@@ -84,7 +176,125 @@ body::before {
     padding-top: 120px; /* Account for fixed navbar */
 }
 
-/* Header Styling */
+/* Content container for info pages */
+.content-container {
+    max-width: none;
+    flex: 1;
+    margin: 0;
+    margin-top: 2rem;
+    margin-bottom: 2rem;
+    background: var(--tertiary-bg);
+    border-radius: 16px;
+    border: 1px solid var(--border-default);
+    box-shadow: var(--shadow-deep);
+    backdrop-filter: blur(10px);
+    padding: 3rem 2rem;
+    position: relative;
+}
+
+.content-container::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    height: 1px;
+    background: linear-gradient(90deg, transparent, var(--zion-cyan), transparent);
+    opacity: 0.5;
+}
+
+/* ========== SIDE NAVIGATION (Info Pages) ========== */
+
+.side-nav {
+    width: 250px;
+    flex-shrink: 0;
+    position: sticky;
+    top: 100px;
+    height: fit-content;
+    max-height: calc(100vh - 120px);
+    overflow-y: auto;
+    background: var(--surface-bg);
+    border: 1px solid var(--border-default);
+    border-radius: 12px;
+    padding: 1.5rem;
+    box-shadow: var(--shadow-soft);
+    backdrop-filter: blur(10px);
+}
+
+.side-nav h3 {
+    color: var(--zion-cyan);
+    font-size: 1rem;
+    font-weight: 600;
+    margin-bottom: 1rem;
+    padding-bottom: 0.5rem;
+    border-bottom: 1px solid var(--border-default);
+}
+
+.side-nav ul {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+}
+
+.side-nav li {
+    margin: 0;
+}
+
+.side-nav a {
+    display: block;
+    color: var(--text-secondary);
+    text-decoration: none;
+    padding: 0.5rem 0;
+    font-size: 0.875rem;
+    line-height: 1.4;
+    border-left: 2px solid transparent;
+    padding-left: 0.75rem;
+    margin-left: -0.75rem;
+    transition: all 0.2s ease;
+}
+
+.side-nav a:hover {
+    color: var(--text-primary);
+    border-left-color: var(--zion-cyan);
+    background: var(--hover-bg);
+    padding-left: 1rem;
+}
+
+.side-nav a.active {
+    color: var(--zion-cyan);
+    border-left-color: var(--zion-cyan);
+    background: var(--hover-bg);
+    font-weight: 500;
+}
+
+/* Nested navigation items */
+.side-nav ul ul {
+    margin-left: 1rem;
+    margin-top: 0.25rem;
+}
+
+.side-nav ul ul a {
+    font-size: 0.8rem;
+    color: var(--text-muted);
+}
+
+/* Mobile table of contents toggle */
+.mobile-toc-toggle {
+    display: none;
+    background: var(--surface-bg);
+    border: 1px solid var(--border-default);
+    color: var(--text-primary);
+    padding: 0.75rem 1rem;
+    border-radius: 8px;
+    margin-bottom: 1rem;
+    cursor: pointer;
+    font-size: 0.875rem;
+    width: 100%;
+    text-align: left;
+}
+
+/* ========== HEADER STYLING (Chat Page) ========== */
+
 .header {
     text-align: center;
     padding: 2rem 0;
@@ -114,7 +324,66 @@ body::before {
     letter-spacing: 0.02em;
 }
 
-/* Text Size Controls */
+/* ========== TYPOGRAPHY (Info Pages) ========== */
+
+.content-container h1 {
+    font-size: 2.5rem;
+    font-weight: 600;
+    background: linear-gradient(135deg, var(--zion-cyan), var(--zion-purple));
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+    margin-bottom: 1.5rem;
+    text-align: center;
+    letter-spacing: -0.02em;
+}
+
+.content-container h2 {
+    font-size: 1.75rem;
+    font-weight: 500;
+    color: var(--zion-cyan);
+    margin: 2rem 0 1rem 0;
+    border-bottom: 1px solid var(--border-default);
+    padding-bottom: 0.5rem;
+}
+
+.content-container h3 {
+    font-size: 1.25rem;
+    font-weight: 500;
+    color: var(--text-primary);
+    margin: 1.5rem 0 0.75rem 0;
+}
+
+.content-container p {
+    margin-bottom: 1.25rem;
+    color: var(--text-secondary);
+    font-size: 1rem;
+}
+
+.content-container ul {
+    margin-bottom: 1.25rem;
+    padding-left: 1.5rem;
+}
+
+.content-container li {
+    margin-bottom: 0.5rem;
+    color: var(--text-secondary);
+}
+
+.content-container a {
+    color: var(--zion-cyan);
+    text-decoration: none;
+    border-bottom: 1px solid transparent;
+    transition: all 0.2s ease;
+}
+
+.content-container a:hover {
+    border-bottom-color: var(--zion-cyan);
+    text-shadow: var(--glow-cyan);
+}
+
+/* ========== TEXT SIZE CONTROLS (Chat Page) ========== */
+
 .text-controls {
     display: flex;
     align-items: center;
@@ -190,7 +459,7 @@ body::before {
     font-size: 1.125rem;
 }
 
-/* Chat Window */
+/* ========== CHAT INTERFACE ========== */
 
 .chat-window {
     flex: 1;
@@ -298,7 +567,6 @@ body::before {
     box-shadow: 0 4px 15px rgba(107, 70, 193, 0.3);
 }
 
-
 .message-text {
     background: rgba(22, 33, 62, 0.8);
     padding: 1rem 1.2rem;
@@ -324,14 +592,17 @@ body::before {
     font-weight: 600;
     color: var(--text-primary);
 }
+
 .message-text em, .message-text i {
     font-style: italic;
     color: var(--text-primary);
 }
+
 .message-text ul, .message-text ol {
     margin: 0.5em 0 0.5em 1.2em;
     padding: 0;
 }
+
 .message-text li {
     margin-bottom: 0.3em;
     font-size: 0.92rem;
@@ -352,6 +623,15 @@ body::before {
 
 .message:hover .message-text::before {
     opacity: 1;
+}
+
+.message-timestamp {
+    font-size: 0.75rem;
+    color: #b3b3b3;
+    opacity: 0.7;
+    margin: 0.3em 0 0 0;
+    display: block;
+    text-align: left;
 }
 
 .user-message .message-content {
@@ -507,11 +787,138 @@ body::before {
     box-shadow: var(--shadow-soft);
 }
 
-/* Animations */
+/* ========== SPECIAL STYLING (Info Pages) ========== */
+
+/* Special styling for emphasis blocks */
+.emphasis-block {
+    background: var(--surface-bg);
+    border: 1px solid var(--border-focus);
+    border-radius: 12px;
+    padding: 1.5rem;
+    margin: 2rem 0;
+    box-shadow: var(--glow-cyan);
+}
+
+.emphasis-block h3 {
+    color: var(--zion-cyan);
+    margin-top: 0;
+}
+
+/* Resource lists styling */
+.resource-category {
+    background: rgba(0, 255, 157, 0.05);
+    border: 1px solid rgba(0, 255, 157, 0.2);
+    border-radius: 8px;
+    padding: 1.5rem;
+    margin: 1rem 0;
+    transition: all 0.3s ease;
+}
+
+.resource-category:hover {
+    background: rgba(0, 255, 157, 0.08);
+    border-color: rgba(0, 255, 157, 0.3);
+    transform: translateY(-2px);
+}
+
+.resource-category h3 {
+    color: var(--zion-green);
+    margin-top: 0;
+    margin-bottom: 1rem;
+    font-size: 1.2rem;
+}
+
+.resource-category ul {
+    list-style: none;
+    padding: 0;
+    margin-bottom: 0;
+}
+
+.resource-category li {
+    margin: 0.8rem 0;
+    padding-left: 1rem;
+    position: relative;
+    line-height: 1.6;
+    margin-bottom: 0.75rem;
+    padding-left: 0.5rem;
+}
+
+.resource-category li::before {
+    content: "→";
+    position: absolute;
+    left: 0;
+    color: var(--zion-green);
+    font-weight: bold;
+}
+
+.resource-category a {
+    color: var(--zion-green);
+    text-decoration: none;
+    transition: color 0.3s ease;
+}
+
+.resource-category a:hover {
+    color: #ffffff;
+    text-decoration: underline;
+}
+
+.resource-category strong {
+    color: var(--text-primary);
+    display: block;
+    margin-bottom: 0.3rem;
+}
+
+/* ========== FOOTER ========== */
+
+.site-footer {
+    background: var(--tertiary-bg);
+    border-top: 1px solid var(--border-default);
+    padding: 2rem;
+    margin-top: auto;
+    text-align: center;
+    max-width: 1200px;
+    margin: 0 auto;
+}
+
+.site-footer p {
+    color: var(--text-muted);
+    font-size: 0.875rem;
+    margin-bottom: 0.5rem;
+}
+
+/* ========== SCROLLBAR STYLING ========== */
+
+/* Apply consistent scrollbar styling to all scrollable elements */
+.chat-window::-webkit-scrollbar,
+.side-nav::-webkit-scrollbar,
+*::-webkit-scrollbar {
+    width: 6px;
+}
+
+.chat-window::-webkit-scrollbar-track,
+.side-nav::-webkit-scrollbar-track,
+*::-webkit-scrollbar-track {
+    background: transparent;
+}
+
+.chat-window::-webkit-scrollbar-thumb,
+.side-nav::-webkit-scrollbar-thumb,
+*::-webkit-scrollbar-thumb {
+    background: var(--border-default);
+    border-radius: 3px;
+}
+
+.chat-window::-webkit-scrollbar-thumb:hover,
+.side-nav::-webkit-scrollbar-thumb:hover,
+*::-webkit-scrollbar-thumb:hover {
+    background: var(--zion-cyan);
+}
+
+/* ========== ANIMATIONS ========== */
+
 @keyframes fadeIn {
     from {
         opacity: 0;
-        transform: translateY(10px);
+        transform: translateY(20px);
     }
     to {
         opacity: 1;
@@ -541,26 +948,45 @@ body::before {
     }
 }
 
-/* Scrollbar Styling */
-.chat-window::-webkit-scrollbar {
-    width: 6px;
+.content-container {
+    animation: fadeIn 0.6s ease-out;
 }
 
-.chat-window::-webkit-scrollbar-track {
-    background: transparent;
+/* ========== RESPONSIVE DESIGN ========== */
+
+@media (max-width: 1024px) {
+    .side-nav {
+        display: none;
+    }
+    
+    .main-content {
+        flex-direction: column;
+    }
+    
+    .mobile-toc-toggle {
+        display: block;
+    }
 }
 
-.chat-window::-webkit-scrollbar-thumb {
-    background: var(--border-default);
-    border-radius: 3px;
-}
-
-.chat-window::-webkit-scrollbar-thumb:hover {
-    background: var(--zion-cyan);
-}
-
-/* Responsive Design */
 @media (max-width: 768px) {
+    .site-header {
+        padding: 1rem;
+        flex-direction: column;
+        gap: 1rem;
+        justify-content: center;
+    }
+    
+    .main-nav ul {
+        gap: 1rem;
+        flex-wrap: wrap;
+        justify-content: center;
+    }
+    
+    .main-nav a {
+        padding: 0.4rem 0.75rem;
+        font-size: 0.875rem;
+    }
+    
     .container {
         padding: 1rem;
         gap: 1rem;
@@ -587,9 +1013,39 @@ body::before {
         padding: 0.6rem 0.75rem;
         font-size: 0.9rem;
     }
+    
+    .content-container {
+        margin: 1rem;
+        padding: 2rem 1.5rem;
+    }
+    
+    .content-container h1 {
+        font-size: 2rem;
+    }
+    
+    .content-container h2 {
+        font-size: 1.5rem;
+    }
+    
+    .main-content {
+        padding: 0 1rem;
+    }
 }
 
 @media (max-width: 480px) {
+    .site-title {
+        font-size: 1.5rem;
+    }
+    
+    .main-nav ul {
+        gap: 0.5rem;
+    }
+    
+    .main-nav a {
+        padding: 0.3rem 0.5rem;
+        font-size: 0.8rem;
+    }
+    
     .header {
         padding: 1.5rem 0;
     }
@@ -612,9 +1068,28 @@ body::before {
         padding: 0.75rem 1rem;
         font-size: 0.9rem;
     }
+    
+    .content-container {
+        padding: 1.5rem 1rem;
+    }
+    
+    .content-container h1 {
+        font-size: 1.75rem;
+    }
+    
+    .resource-category,
+    .emphasis-block {
+        padding: 1rem;
+    }
+    
+    .footer-links {
+        flex-direction: column;
+        gap: 0.5rem;
+    }
 }
 
-/* Screenshot and Print Fixes for Chat Interface */
+/* ========== SCREENSHOT AND PRINT FIXES ========== */
+
 @media print {
     /* Fix background stretching issues in screenshots */
     html, body {
@@ -638,11 +1113,26 @@ body::before {
         background: transparent !important;
     }
     
+    /* Remove backdrop filters that cause issues in screenshots */
+    .site-header,
+    .side-nav,
+    .emphasis-block,
     .header,
     .chat-window,
     .input-area {
         backdrop-filter: none !important;
         -webkit-backdrop-filter: none !important;
+    }
+    
+    /* Ensure solid backgrounds for better screenshot rendering */
+    .site-header {
+        background: rgba(19, 19, 32, 0.98) !important;
+        border-bottom: 1px solid #334155;
+    }
+    
+    .side-nav {
+        background: rgba(19, 19, 32, 0.98) !important;
+        border-right: 1px solid #334155;
     }
     
     .header {
@@ -659,6 +1149,11 @@ body::before {
         border-top: 1px solid #334155;
     }
     
+    .emphasis-block {
+        background: rgba(26, 26, 46, 0.98) !important;
+        border: 1px solid #334155;
+    }
+    
     .message {
         backdrop-filter: none !important;
     }
@@ -669,5 +1164,19 @@ body::before {
     
     .user-message .message-content {
         background: rgba(0, 245, 255, 0.15) !important;
+    }
+    
+    /* Fix text rendering for screenshots */
+    * {
+        -webkit-font-smoothing: antialiased !important;
+        -moz-osx-font-smoothing: grayscale !important;
+        text-rendering: optimizeLegibility !important;
+    }
+    
+    /* Remove any transforms that might cause issues */
+    .site-header,
+    .main-nav,
+    .content-container {
+        transform: none !important;
     }
 }
