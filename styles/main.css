@@ -489,6 +489,43 @@ body::before {
     box-shadow: 0 0 10px rgba(0, 245, 255, 0.3);
 }
 
+/* Download Chat Button */
+.download-chat-btn {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    background: rgba(22, 33, 62, 0.8);
+    border: 1px solid var(--border-default);
+    border-radius: 8px;
+    color: var(--text-secondary);
+    cursor: pointer;
+    transition: all 0.3s ease;
+    padding: 0.5rem 1rem;
+    font-family: inherit;
+    font-size: 0.875rem;
+    font-weight: 500;
+}
+
+.download-chat-btn svg {
+    transition: transform 0.3s ease;
+}
+
+.download-chat-btn:hover {
+    background: var(--hover-bg);
+    border-color: var(--zion-cyan);
+    color: var(--zion-cyan);
+    box-shadow: 0 0 15px rgba(0, 255, 255, 0.2);
+}
+
+.download-chat-btn:hover svg {
+    transform: translateY(2px);
+}
+
+.download-chat-btn:disabled {
+    opacity: 0.5;
+    cursor: not-allowed;
+}
+
 /* Text size classes */
 .text-small .message-text {
     font-size: 0.875rem;
@@ -503,6 +540,16 @@ body::before {
 }
 
 /* ========== CHAT INTERFACE ========== */
+
+/* Chat Controls Container */
+.chat-controls {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    gap: 1rem;
+    margin-bottom: 1rem;
+    flex-wrap: wrap;
+}
 
 /* Scenario Selection */
 .scenario-selection {
@@ -1243,6 +1290,21 @@ body::before {
 
     .scenario-icon {
         font-size: 1.75rem;
+    }
+    
+    .chat-controls {
+        flex-direction: column;
+        align-items: stretch;
+        gap: 0.75rem;
+    }
+    
+    .text-controls {
+        justify-content: center;
+    }
+    
+    .download-chat-btn {
+        width: 100%;
+        justify-content: center;
     }
     
     .input-area {

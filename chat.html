@@ -72,12 +72,21 @@
                 <button class="skip-scenario-btn" id="skip-scenario">Skip and Start Chat</button>
             </div>
 
-            <!-- Text Size Controls -->
-            <div class="text-controls">
-                <span class="control-label">Text Size:</span>
-                <button class="text-size-btn" data-size="small">A</button>
-                <button class="text-size-btn active" data-size="medium">A</button>
-                <button class="text-size-btn" data-size="large">A</button>
+            <!-- Chat Controls -->
+            <div class="chat-controls">
+                <div class="text-controls">
+                    <span class="control-label">Text Size:</span>
+                    <button class="text-size-btn" data-size="small">A</button>
+                    <button class="text-size-btn active" data-size="medium">A</button>
+                    <button class="text-size-btn" data-size="large">A</button>
+                </div>
+                <button id="download-chat-btn" class="download-chat-btn" title="Download chat history">
+                    <svg width="16" height="16" viewBox="0 0 16 16" fill="currentColor">
+                        <path d="M8 12L3 7h3V1h4v6h3L8 12z"/>
+                        <path d="M1 14h14v2H1v-2z"/>
+                    </svg>
+                    <span>Download Chat</span>
+                </button>
             </div>
             
             <div id="chat-window" class="chat-window"></div>
