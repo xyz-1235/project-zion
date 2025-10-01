@@ -73,7 +73,7 @@
             </div>
 
             <!-- Chat Controls -->
-            <div class="chat-controls">
+            <div class="chat-controls" id="chat-controls" style="display: none;">
                 <div class="text-controls">
                     <span class="control-label">Text Size:</span>
                     <button class="text-size-btn" data-size="small">A</button>
@@ -89,9 +89,9 @@
                 </button>
             </div>
             
-            <div id="chat-window" class="chat-window"></div>
+            <div id="chat-window" class="chat-window" style="display: none;"></div>
             
-            <div class="input-area">
+            <div class="input-area" id="input-area" style="display: none;">
                 <input type="text" id="user-input" placeholder="Type your message here..." autocomplete="off">
                 <button id="send-btn">Send</button>
             </div>

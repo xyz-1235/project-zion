@@ -7,6 +7,8 @@ const userInput = document.getElementById('user-input');
 const sendButton = document.getElementById('send-btn');
 const scenarioSelection = document.getElementById('scenario-selection');
 const downloadChatBtn = document.getElementById('download-chat-btn');
+const chatControls = document.getElementById('chat-controls');
+const inputArea = document.getElementById('input-area');
 
 let isProcessing = false;
 let selectedScenario = null;
@@ -58,7 +60,6 @@ function initializeChat() {
     // Download chat button
     if (downloadChatBtn) {
         downloadChatBtn.addEventListener('click', downloadChatHistory);
-        downloadChatBtn.style.display = 'none'; // Hidden until chat starts
     }
 }
 
@@ -68,10 +69,13 @@ function startChatWithScenario(scenario) {
         scenarioSelection.style.display = 'none';
     }
     
-    // Show chat interface and download button
+    // Show all chat interface elements
+    if (chatControls) {
+        chatControls.style.display = 'flex';
+    }
     chatWindow.style.display = 'block';
-    if (downloadChatBtn) {
-        downloadChatBtn.style.display = 'flex';
+    if (inputArea) {
+        inputArea.style.display = 'flex';
     }
     
     // Display scenario-specific welcome message
