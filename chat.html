@@ -1,0 +1,56 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>AI Assistant - Project Zion</title>
+    <link rel="stylesheet" href="styles/main.css">
+</head>
+<body>
+    <header class="site-header">
+        <a href="index.html" class="site-title">Project Zion</a>
+        <nav class="main-nav">
+            <ul>
+                <li><a href="index.html">Home</a></li>
+                <li><a href="chat.html" class="active">AI Assistant</a></li>
+                <li><a href="about.html">About the Project</a></li>
+                <li><a href="how.html">How It Works</a></li>
+                <li><a href="resources.html">Resources Hub</a></li>
+                <li><a href="tips.html">Safety Tips</a></li>
+            </ul>
+        </nav>
+    </header>
+
+    <main class="main-content">
+        <div class="container">
+            <div class="chat-page-header">
+                <h1>AI Security Assistant</h1>
+                <p>Get immediate, anonymous help with cybersecurity concerns</p>
+            </div>
+
+            <!-- Text Size Controls -->
+            <div class="text-controls">
+                <span class="control-label">Text Size:</span>
+                <button class="text-size-btn" data-size="small">A</button>
+                <button class="text-size-btn active" data-size="medium">A</button>
+                <button class="text-size-btn" data-size="large">A</button>
+            </div>
+            
+            <div id="chat-window" class="chat-window"></div>
+            
+            <div class="input-area">
+                <input type="text" id="user-input" placeholder="Type your message here..." autocomplete="off">
+                <button id="send-btn">Send</button>
+            </div>
+        </div>
+    </main>
+
+    <footer class="site-footer">
+        <p>&copy; 2025 Project Zion. Created for TENET'25 Hackathon.</p>
+        <p>Your Digital Safe Haven - Anonymous, Secure, Supportive</p>
+    </footer>
+    
+    <script src="js/navbar.js"></script>
+    <script src="js/logic.js"></script>
+</body>
+</html>

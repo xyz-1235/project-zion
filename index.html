@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Project Zion</title>
+    <title>Project Zion - Your Digital Safe Haven</title>
     <link rel="stylesheet" href="styles/main.css">
 </head>
 <body>
@@ -12,6 +12,7 @@
         <nav class="main-nav">
             <ul>
                 <li><a href="index.html" class="active">Home</a></li>
+                <li><a href="chat.html">AI Assistant</a></li>
                 <li><a href="about.html">About the Project</a></li>
                 <li><a href="how.html">How It Works</a></li>
                 <li><a href="resources.html">Resources Hub</a></li>
@@ -20,31 +21,95 @@
         </nav>
     </header>
 
-        <main class="main-content">
-            <div class="container">
-                <!-- Text Size Controls -->
-                <div class="text-controls">
-                    <span class="control-label">Text Size:</span>
-                    <button class="text-size-btn" data-size="small">A</button>
-                    <button class="text-size-btn active" data-size="medium">A</button>
-                    <button class="text-size-btn" data-size="large">A</button>
-                </div>
-                
-                <div id="chat-window" class="chat-window"></div>
-                
-                <div class="input-area">
-                    <input type="text" id="user-input" placeholder="Type your message here..." autocomplete="off">
-                    <button id="send-btn">Send</button>
+    <main class="main-content landing-page">
+        <!-- Hero Section -->
+        <section class="hero-section">
+            <div class="hero-content">
+                <h1 class="hero-title">Project Zion</h1>
+                <p class="hero-subtitle">Your Digital Safe Haven</p>
+                <p class="hero-description">
+                    Anonymous, secure support for victims of cybercrime, digital harassment, and privacy violations. 
+                    Get immediate help without compromising your safety or privacy.
+                </p>
+                <div class="hero-actions">
+                    <a href="chat.html" class="cta-button primary">Get Help Now</a>
+                    <a href="about.html" class="cta-button secondary">Learn More</a>
                 </div>
             </div>
-            
-            <script src="js/navbar.js"></script>
-            <script src="js/logic.js"></script>
-        </main>
+        </section>
+
+        <!-- Key Features -->
+        <section class="features-section">
+            <div class="features-grid">
+                <div class="feature-card">
+                    <div class="feature-icon">🔒</div>
+                    <h3>Completely Anonymous</h3>
+                    <p>No registration, no tracking, no data collection. Your privacy is our priority.</p>
+                </div>
+                
+                <div class="feature-card">
+                    <div class="feature-icon">🤖</div>
+                    <h3>AI-Powered Support</h3>
+                    <p>Get immediate, expert guidance on cybersecurity issues from our trained AI assistant.</p>
+                </div>
+                
+                <div class="feature-card">
+                    <div class="feature-icon">🛡️</div>
+                    <h3>Expert Resources</h3>
+                    <p>Access curated safety tips, reporting guides, and recovery resources.</p>
+                </div>
+                
+                <div class="feature-card">
+                    <div class="feature-icon">💬</div>
+                    <h3>Supportive Environment</h3>
+                    <p>A judgment-free space designed to help you navigate digital security challenges.</p>
+                </div>
+            </div>
+        </section>
+
+        <!-- Quick Access -->
+        <section class="quick-access-section">
+            <h2>Need Help With Something Specific?</h2>
+            <div class="quick-links">
+                <a href="chat.html" class="quick-link">
+                    <h4>I've Been Scammed</h4>
+                    <p>Get immediate guidance on securing your accounts and next steps</p>
+                </a>
+                
+                <a href="chat.html" class="quick-link">
+                    <h4>Online Harassment</h4>
+                    <p>Learn how to protect yourself and document evidence safely</p>
+                </a>
+                
+                <a href="chat.html" class="quick-link">
+                    <h4>Identity Theft</h4>
+                    <p>Step-by-step recovery assistance and prevention tips</p>
+                </a>
+                
+                <a href="tips.html" class="quick-link">
+                    <h4>Prevention Tips</h4>
+                    <p>Proactive measures to protect yourself online</p>
+                </a>
+            </div>
+        </section>
+
+        <!-- Emergency Notice -->
+        <section class="emergency-section">
+            <div class="emergency-content">
+                <h3>⚠️ In Immediate Danger?</h3>
+                <p>If you're in immediate physical danger, please contact your local emergency services immediately. Project Zion provides digital security support, not emergency response.</p>
+                <div class="emergency-links">
+                    <span>Emergency: 100 (Police) | 1091 (Women's Helpline) | 1930 (Cyber Crime Helpline)</span>
+                </div>
+            </div>
+        </section>
+    </main>
 
     <footer class="site-footer">
         <p>&copy; 2025 Project Zion. Created for TENET'25 Hackathon.</p>
         <p>Your Digital Safe Haven - Anonymous, Secure, Supportive</p>
     </footer>
+    
+    <script src="js/navbar.js"></script>
 </body>
 </html>

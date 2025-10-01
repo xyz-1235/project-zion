@@ -164,6 +164,7 @@ body::before {
 .main-content {
     flex: 1;
     padding: 0 2rem;
+    padding-top: 120px; /* Account for floating navbar */
     display: flex;
     gap: 2rem;
     max-width: 1400px;
@@ -187,7 +188,7 @@ body::before {
     max-width: none;
     flex: 1;
     margin: 0;
-    margin-top: 2rem;
+    margin-top: 1rem; /* Reduced since main-content now has top padding */
     margin-bottom: 2rem;
     background: var(--tertiary-bg);
     border-radius: 16px;
@@ -1002,6 +1003,11 @@ body::before {
     .container {
         padding: 1rem;
         gap: 1rem;
+        padding-top: 160px; /* Increased for mobile navbar height */
+    }
+    
+    .main-content {
+        padding-top: 140px; /* Increased for mobile navbar height */
     }
     
     .header h1 {
@@ -1190,5 +1196,302 @@ body::before {
     .main-nav,
     .content-container {
         transform: none !important;
+    }
+}
+
+/* ========== LANDING PAGE STYLES ========== */
+
+.hero-section {
+    background: linear-gradient(135deg, rgba(0, 255, 255, 0.1) 0%, rgba(255, 0, 255, 0.1) 100%);
+    border: 1px solid rgba(0, 255, 255, 0.3);
+    border-radius: 16px;
+    padding: 40px;
+    margin: 30px 0;
+    text-align: center;
+    position: relative;
+    overflow: hidden;
+}
+
+.hero-section::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: 
+        radial-gradient(circle at 20% 50%, rgba(0, 255, 255, 0.03) 0%, transparent 50%),
+        radial-gradient(circle at 80% 20%, rgba(255, 0, 255, 0.03) 0%, transparent 50%),
+        radial-gradient(circle at 40% 80%, rgba(0, 255, 255, 0.02) 0%, transparent 50%);
+    pointer-events: none;
+}
+
+.hero-content {
+    position: relative;
+    z-index: 1;
+}
+
+.hero-section h1 {
+    font-size: 2.5rem;
+    margin-bottom: 20px;
+    background: linear-gradient(45deg, #00ffff, #ff00ff, #00ffff);
+    background-size: 200% 200%;
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+    animation: gradientShift 3s ease-in-out infinite;
+}
+
+.hero-section p {
+    font-size: 1.2rem;
+    margin-bottom: 30px;
+    color: rgba(255, 255, 255, 0.8);
+}
+
+.cta-buttons {
+    display: flex;
+    gap: 20px;
+    justify-content: center;
+    flex-wrap: wrap;
+    margin-top: 30px;
+}
+
+.cta-button {
+    display: inline-block;
+    padding: 12px 30px;
+    background: linear-gradient(45deg, rgba(0, 255, 255, 0.2), rgba(255, 0, 255, 0.2));
+    border: 1px solid rgba(0, 255, 255, 0.5);
+    border-radius: 8px;
+    color: #00ffff;
+    text-decoration: none;
+    font-weight: bold;
+    transition: all 0.3s ease;
+    position: relative;
+    overflow: hidden;
+}
+
+.cta-button:hover {
+    background: linear-gradient(45deg, rgba(0, 255, 255, 0.3), rgba(255, 0, 255, 0.3));
+    border-color: #00ffff;
+    box-shadow: 0 0 20px rgba(0, 255, 255, 0.3);
+    transform: translateY(-2px);
+}
+
+.cta-button.secondary {
+    background: linear-gradient(45deg, rgba(255, 0, 255, 0.2), rgba(0, 255, 255, 0.2));
+    border-color: rgba(255, 0, 255, 0.5);
+    color: #ff00ff;
+}
+
+.cta-button.secondary:hover {
+    background: linear-gradient(45deg, rgba(255, 0, 255, 0.3), rgba(0, 255, 255, 0.3));
+    border-color: #ff00ff;
+    box-shadow: 0 0 20px rgba(255, 0, 255, 0.3);
+}
+
+.features-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+    gap: 25px;
+    margin: 40px 0;
+}
+
+.feature-card {
+    background: rgba(0, 20, 40, 0.8);
+    border: 1px solid rgba(0, 255, 255, 0.3);
+    border-radius: 12px;
+    padding: 25px;
+    transition: all 0.3s ease;
+    position: relative;
+    overflow: hidden;
+}
+
+.feature-card::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: linear-gradient(135deg, rgba(0, 255, 255, 0.05) 0%, rgba(255, 0, 255, 0.05) 100%);
+    opacity: 0;
+    transition: opacity 0.3s ease;
+}
+
+.feature-card:hover {
+    border-color: #00ffff;
+    box-shadow: 0 8px 25px rgba(0, 255, 255, 0.2);
+    transform: translateY(-5px);
+}
+
+.feature-card:hover::before {
+    opacity: 1;
+}
+
+.feature-card h3 {
+    color: #00ffff;
+    margin-bottom: 15px;
+    font-size: 1.3rem;
+    position: relative;
+    z-index: 1;
+}
+
+.feature-card p {
+    color: rgba(255, 255, 255, 0.8);
+    line-height: 1.6;
+    position: relative;
+    z-index: 1;
+}
+
+.quick-access {
+    margin: 40px 0;
+}
+
+.quick-access h2 {
+    text-align: center;
+    margin-bottom: 30px;
+    color: #00ffff;
+}
+
+.quick-links {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+    gap: 20px;
+}
+
+.quick-link {
+    display: block;
+    padding: 20px;
+    background: rgba(0, 20, 40, 0.6);
+    border: 1px solid rgba(0, 255, 255, 0.2);
+    border-radius: 10px;
+    color: #ffffff;
+    text-decoration: none;
+    text-align: center;
+    transition: all 0.3s ease;
+    position: relative;
+    overflow: hidden;
+}
+
+.quick-link::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: -100%;
+    width: 100%;
+    height: 100%;
+    background: linear-gradient(90deg, transparent, rgba(0, 255, 255, 0.1), transparent);
+    transition: left 0.5s ease;
+}
+
+.quick-link:hover {
+    border-color: #00ffff;
+    box-shadow: 0 5px 15px rgba(0, 255, 255, 0.2);
+    transform: translateY(-3px);
+}
+
+.quick-link:hover::before {
+    left: 100%;
+}
+
+.quick-link h3 {
+    margin: 0 0 10px 0;
+    color: #00ffff;
+    font-size: 1.1rem;
+}
+
+.quick-link p {
+    margin: 0;
+    font-size: 0.9rem;
+    color: rgba(255, 255, 255, 0.7);
+}
+
+.emergency-notice {
+    background: linear-gradient(135deg, rgba(255, 107, 107, 0.1) 0%, rgba(255, 165, 0, 0.1) 100%);
+    border: 1px solid rgba(255, 107, 107, 0.4);
+    border-radius: 12px;
+    padding: 25px;
+    margin: 30px 0;
+    text-align: center;
+}
+
+.emergency-notice h2 {
+    color: #ff6b6b;
+    margin-bottom: 15px;
+    font-size: 1.4rem;
+}
+
+.emergency-notice p {
+    color: rgba(255, 255, 255, 0.9);
+    margin-bottom: 15px;
+    line-height: 1.6;
+}
+
+.emergency-contact {
+    background: rgba(255, 107, 107, 0.1);
+    border: 1px solid rgba(255, 107, 107, 0.3);
+    border-radius: 8px;
+    padding: 15px;
+    margin: 15px 0;
+    display: inline-block;
+}
+
+.emergency-contact strong {
+    color: #ff6b6b;
+    font-size: 1.1rem;
+}
+
+@keyframes gradientShift {
+    0%, 100% {
+        background-position: 0% 50%;
+    }
+    50% {
+        background-position: 100% 50%;
+    }
+}
+
+/* Responsive Design for Landing Page */
+@media (max-width: 768px) {
+    .hero-section {
+        padding: 30px 20px;
+        margin: 20px 0;
+    }
+    
+    .hero-section h1 {
+        font-size: 2rem;
+    }
+    
+    .hero-section p {
+        font-size: 1rem;
+    }
+    
+    .cta-buttons {
+        flex-direction: column;
+        align-items: center;
+    }
+    
+    .cta-button {
+        width: 100%;
+        max-width: 250px;
+        text-align: center;
+    }
+    
+    .features-grid {
+        grid-template-columns: 1fr;
+        gap: 20px;
+    }
+    
+    .feature-card {
+        padding: 20px;
+    }
+    
+    .quick-links {
+        grid-template-columns: 1fr;
+        gap: 15px;
+    }
+    
+    .emergency-notice {
+        padding: 20px;
+        margin: 20px 0;
     }
 }
