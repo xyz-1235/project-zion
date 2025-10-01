@@ -1,12 +1,14 @@
 /**
- * Project Zion - Simple Chat Logic
+ * Project Zion - Chat Logic with Scenario Selection
  */
 
 const chatWindow = document.getElementById('chat-window');
 const userInput = document.getElementById('user-input');
 const sendButton = document.getElementById('send-btn');
+const scenarioSelection = document.getElementById('scenario-selection');
 
 let isProcessing = false;
+let selectedScenario = null;
 
 // Initialize
 if (chatWindow && userInput && sendButton) {
@@ -14,6 +16,24 @@ if (chatWindow && userInput && sendButton) {
 }
 
 function initializeChat() {
+    // Scenario selection handlers
+    if (scenarioSelection) {
+        document.querySelectorAll('.scenario-btn').forEach(button => {
+            button.addEventListener('click', () => {
+                selectedScenario = button.dataset.scenario;
+                startChatWithScenario(selectedScenario);
+            });
+        });
+        
+        const skipBtn = document.getElementById('skip-scenario');
+        if (skipBtn) {
+            skipBtn.addEventListener('click', () => {
+                selectedScenario = 'general';
+                startChatWithScenario('general');
+            });
+        }
+    }
+    
     // Event listeners
     sendButton.addEventListener('click', handleUserMessage);
     userInput.addEventListener('keydown', (e) => {
@@ -32,9 +52,28 @@ function initializeChat() {
             chatWindow.classList.add(`text-${button.dataset.size}`);
         });
     });
+}
+
+function startChatWithScenario(scenario) {
+    // Hide scenario selection
+    if (scenarioSelection) {
+        scenarioSelection.style.display = 'none';
+    }
     
-    // Welcome message
-    displayMessage("Hi, I'm Zion. You're safe here. How can I help?", 'bot');
+    // Show chat interface
+    chatWindow.style.display = 'block';
+    
+    // Display scenario-specific welcome message
+    const welcomeMessages = {
+        'scammed': "I'm here to help you secure your accounts after a scam. Let's take this step by step. First, can you tell me what happened?",
+        'harassment': "I'm sorry you're experiencing online harassment. Your safety is important. Can you describe what's been happening?",
+        'identity-theft': "Identity theft is serious, but we can work through this together. First, let's assess the situation. What makes you believe your identity was stolen?",
+        'phishing': "Let's make sure you're safe. Can you tell me what link you clicked or what happened? Don't worry, we'll handle this.",
+        'account-hacked': "Let's secure your account immediately. Which account was compromised (email, social media, banking, etc.)?",
+        'general': "Hi, I'm Zion. You're safe here. How can I help you today?"
+    };
+    
+    displayMessage(welcomeMessages[scenario] || welcomeMessages['general'], 'bot');
     userInput.focus();
 }
 
@@ -53,7 +92,10 @@ async function handleUserMessage() {
         const response = await fetch('/api/getAIResponse', {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({ message })
+            body: JSON.stringify({ 
+                message,
+                scenario: selectedScenario || 'general'
+            })
         });
         
         const data = await response.json();
